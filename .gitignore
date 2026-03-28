@@ -1,0 +1,26 @@
+*.iml
+.idea
+.kotlin
+.gradle
+/local.properties
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Keystore files — never commit these
+*.jks
+*.keystore
+
+# Secrets — never commit these
+secrets.properties
+local.defaults.properties
+
+# APK and AAB files
+*.apk
+*.aab
+
+# Google Services
+google-services.json
