@@ -24,7 +24,7 @@ class LoginViewModelFactory(
         return LoginViewModel(
             keyManager = keyManager,
             getAccessKeyUseCase = GetAccessKeyUseCase(authRepository),
-            deviceId = "1",
+            deviceId = device,
         ) as T
     }
 }

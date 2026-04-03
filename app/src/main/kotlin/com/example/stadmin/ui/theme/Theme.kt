@@ -20,6 +20,10 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = WarmGray,
     onSurfaceVariant = GrayMid,
     outline = GrayMuted,
+    tertiary = SuccessGreen,
+    onTertiary = CardWhite,
+    tertiaryContainer = SuccessGreenContainer,
+    onTertiaryContainer = SuccessGreen,
 )
 
 @Composable

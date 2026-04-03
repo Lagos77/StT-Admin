@@ -23,6 +23,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,11 +57,19 @@ fun LoginScreen(
     }
 
     LaunchedEffect(state.isAuthenticated) {
-        if (state.isAuthenticated) onLoginSuccess()
+        if (state.isAuthenticated) {
+            onLoginSuccess()
+        }
     }
 
-    LaunchedEffect(state.snackBarMessage) {
-        state.snackBarMessage?.let { snackBarHostState.showSnackbar(it) }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.onClearAuthenticated()
+        }
+    }
+
+    LaunchedEffect(state.error) {
+        state.error?.let { snackBarHostState.showSnackbar(it) }
     }
 
     Scaffold(
@@ -75,7 +84,6 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Logo
             Box(
                 modifier = Modifier
                     .size(72.dp)
@@ -95,7 +103,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.large))
 
-            // Eyebrow
             Text(
                 text = stringResource(R.string.app_name),
                 style = MaterialTheme.typography.labelLarge,
@@ -105,7 +112,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.small))
 
-            // Title
             Text(
                 text = stringResource(R.string.login_screen_title),
                 style = MaterialTheme.typography.headlineMedium,
@@ -114,7 +120,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.small))
 
-            // Subtitle
             Text(
                 text = stringResource(R.string.login_screen_body),
                 style = MaterialTheme.typography.bodyMedium,
@@ -124,7 +129,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.extraLarge))
 
-            // Button
             Button(
                 onClick = viewModel::onLoginClick,
                 enabled = !state.isLoading,
@@ -153,7 +157,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.large))
 
-            // Footer
             Text(
                 text = "Only authorized devices can access this panel",
                 style = MaterialTheme.typography.bodySmall,

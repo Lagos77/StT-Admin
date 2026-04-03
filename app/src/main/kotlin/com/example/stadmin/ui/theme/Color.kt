@@ -22,6 +22,9 @@ val Charcoal = Color(0xFF2C2C2C)
 val GrayMid = Color(0xFF6B6B6B)
 val GrayMuted = Color(0xFF9E9E9E)
 
+val SuccessGreen = Color(0xFF4CAF50)
+val SuccessGreenContainer = Color(0xFFE8F5E9)
+
 // Semantic
 val OldTestamentRed = Color(0xFF8B3A3A)
 val NewTestamentBlue = Color(0xFF2E5F8A)

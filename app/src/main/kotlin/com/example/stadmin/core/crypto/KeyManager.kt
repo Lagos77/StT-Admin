@@ -1,6 +1,7 @@
 package com.example.stadmin.core.crypto
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -25,6 +26,7 @@ class KeyManager(private val context: Context) {
             }
             true
         } catch (e: Exception) {
+            Log.e("KeyManager saveAccessKey", "Error: ${e.message}")
             false
         }
     }
@@ -33,6 +35,7 @@ class KeyManager(private val context: Context) {
         return try {
             context.dataStore.data.map { it[ACCESS_KEY] }.first()
         } catch (e: Exception) {
+            Log.e("KeyManager getAccessKey", "Error: ${e.message}")
             null
         }
     }
@@ -44,6 +47,7 @@ class KeyManager(private val context: Context) {
             context.dataStore.edit { it.clear() }
             true
         } catch (e: Exception) {
+            Log.e("KeyManager clear", "Error: ${e.message}")
             false
         }
     }

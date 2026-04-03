@@ -1,5 +1,6 @@
 package com.example.stadmin.ui
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
 object Spacing {
@@ -14,4 +15,15 @@ object Spacing {
 
 object Sizing {
     val cardRadius = 12.dp
+    val iconSmall = 16.dp
+    val iconMedium = 24.dp
+    val iconLarge = 32.dp
+    val thumbnailSmall = 36.dp
+    val thumbnailMedium = 52.dp
+}
+
+object Shapes {
+    val pill = RoundedCornerShape(99.dp)
+    val card = RoundedCornerShape(12.dp)
+    val small = RoundedCornerShape(8.dp)
 }

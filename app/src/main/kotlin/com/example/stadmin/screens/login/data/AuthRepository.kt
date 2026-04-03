@@ -1,9 +1,11 @@
 package com.example.stadmin.screens.login.data
 
+import android.util.Log
 import com.example.stadmin.core.supabase.SupabaseClient
+import com.example.stadmin.core.supabase.SupabaseTable
+import com.example.stadmin.screens.login.data.model.DeviceDto
 import com.example.stadmin.screens.login.domain.AuthInterface
 import com.example.stadmin.screens.login.domain.model.Device
-import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -12,11 +14,10 @@ class AuthRepository : AuthInterface {
         return flow {
             if (deviceId.isBlank()) emit(Result.failure(Exception("Device ID is blank")))
             try {
-                val result = SupabaseClient.client
-                    .postgrest["devices"]
+                val result = SupabaseClient.from(SupabaseTable.DEVICES)
                     .select {
                         filter {
-                            eq("device_id", "1")
+                            eq("device_id", deviceId)
                         }
                     }
                     .decodeList<DeviceDto>()
@@ -28,6 +29,7 @@ class AuthRepository : AuthInterface {
                     emit(Result.success(result.first()))
                 }
             } catch (e: Exception) {
+                Log.e("AuthRepository", "Error: ${e.message}")
                 emit(Result.failure(e))
             }
         }

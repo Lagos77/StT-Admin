@@ -1,4 +1,4 @@
-package com.example.stadmin.screens.login.data
+package com.example.stadmin.screens.login.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

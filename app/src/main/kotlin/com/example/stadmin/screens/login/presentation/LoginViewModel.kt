@@ -23,14 +23,17 @@ class LoginViewModel(
     fun onClear() {
         viewModelScope.launch {
             if (keyManager.clear()) {
-                _viewState.update { it.copy(isAuthenticated = false, snackBarMessage = "Key cleared") }
+                _viewState.update { it.copy(isAuthenticated = false, error = "Key cleared") }
             }
         }
+    }
+    fun onClearAuthenticated() {
+        _viewState.update { it.copy(isAuthenticated = false) }
     }
 
     fun onLoginClick() {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
+            _viewState.update { it.copy(isLoading = true, error = null) }
             getAccessKeyUseCase.invoke(deviceId = deviceId).collectLatest { result ->
                 result.fold(
                     onSuccess = { device ->
@@ -38,7 +41,7 @@ class LoginViewModel(
                         _viewState.update { it.copy(isLoading = false, isAuthenticated = true) }
                     },
                     onFailure = { error ->
-                        _viewState.update { it.copy(isLoading = false, snackBarMessage = error.message) }
+                        _viewState.update { it.copy(isLoading = false, error = error.message) }
                     }
                 )
             }
@@ -48,6 +51,6 @@ class LoginViewModel(
     data class LoginViewState(
         val isAuthenticated: Boolean = false,
         val isLoading: Boolean = false,
-        val snackBarMessage: String? = null,
+        val error: String? = null,
     )
 }
