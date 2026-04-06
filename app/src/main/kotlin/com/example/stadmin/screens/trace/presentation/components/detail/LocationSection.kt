@@ -2,9 +2,6 @@ package com.example.stadmin.screens.trace.presentation.components.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -13,8 +10,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.common.PasteButton
 import com.example.stadmin.ui.theme.STAdminTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun LocationSection(
@@ -29,28 +26,16 @@ fun LocationSection(
     SectionCard(
         title = "Location",
         trailingContent = {
-            TextButton(
-                onClick = {
-                    scope.launch {
-                        val text = clipboard.getClipEntry()
-                            ?.clipData
-                            ?.getItemAt(0)
-                            ?.text
-                            ?.toString() ?: return@launch
-                        val parts = text.split(",").map { it.trim() }
-                        if (parts.size == 2) {
-                            onLatitudeChanged(parts[0])
-                            onLongitudeChanged(parts[1])
-                        }
+            PasteButton(
+                label = "Paste",
+                onPaste = { text ->
+                    val parts = text.split(",").map { it.trim() }
+                    if (parts.size == 2) {
+                        onLatitudeChanged(parts[0])
+                        onLongitudeChanged(parts[1])
                     }
                 }
-            ) {
-                Text(
-                    text = "Paste",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+            )
         }) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
             TraceTextField(

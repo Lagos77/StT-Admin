@@ -1,52 +1,28 @@
 package com.example.stadmin.screens.trace.presentation.components.detail
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
-import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
-import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.common.SelectionBottomSheet
+import com.example.stadmin.ui.common.SelectorField
 import com.example.stadmin.ui.theme.STAdminTheme
 import com.example.stadmin.util.Constants.BIBLE_BOOKS
 
@@ -139,30 +115,10 @@ fun PassagesSection(
                         },
                         minLines = 3
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        TextButton(
-                            onClick = {
-                                onPassagesChanged(
-                                    passages.toMutableList().also { it.removeAt(index) })
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Delete,
-                                contentDescription = "Remove passage",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(Sizing.iconSmall)
-                            )
-                            Spacer(modifier = Modifier.width(Spacing.extraSmall))
-                            Text(
-                                text = "Remove",
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
+                    RemoveButton(onClick = {
+                        onPassagesChanged(
+                            passages.toMutableList().also { it.removeAt(index) })
+                    })
                 }
             }
         }
@@ -170,7 +126,7 @@ fun PassagesSection(
 }
 
 @Composable
-private fun BibleBookSelector(
+fun BibleBookSelector(
     selectedBook: String,
     onBookSelected: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -178,163 +134,22 @@ private fun BibleBookSelector(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     if (showBottomSheet) {
-        BibleBookBottomSheet(
-            selectedBook = selectedBook,
-            onBookSelected = onBookSelected,
-            onDismiss = { showBottomSheet = false }
+        SelectionBottomSheet(
+            title = "Select Book",
+            items = BIBLE_BOOKS,
+            selectedItem = selectedBook,
+            onItemSelected = onBookSelected,
+            onDismiss = { showBottomSheet = false },
+            searchable = true
         )
     }
 
-    Column(modifier = modifier) {
-        Text(
-            text = "Book",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline
-        )
-        Spacer(modifier = Modifier.height(Spacing.extraSmall))
-        OutlinedCard(
-            onClick = { showBottomSheet = true },
-            shape = Shapes.small,
-            border = BorderStroke(Border.small, MaterialTheme.colorScheme.outline),
-            colors = CardDefaults.outlinedCardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            OutlinedTextField(
-                value = selectedBook.ifBlank { "Select book" },
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showBottomSheet = true },
-                textStyle = MaterialTheme.typography.bodyMedium,
-                shape = Shapes.small,
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.size(Sizing.iconSmall)
-                    )
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledTextColor = if (selectedBook.isBlank()) MaterialTheme.colorScheme.outline
-                    else MaterialTheme.colorScheme.onSurface
-                ),
-                enabled = false
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BibleBookBottomSheet(
-    selectedBook: String,
-    onBookSelected: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var searchQuery by remember { mutableStateOf("") }
-
-    val filteredBooks = remember(searchQuery) {
-        if (searchQuery.isBlank()) BIBLE_BOOKS
-        else BIBLE_BOOKS.filter { it.contains(searchQuery, ignoreCase = true) }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(topStart = Sizing.cardRadius, topEnd = Sizing.cardRadius)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Spacing.medium)
-        ) {
-            Text(
-                text = "Select Book",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = Spacing.medium)
-            )
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                placeholder = {
-                    Text(
-                        text = "Search...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = Spacing.small),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                shape = Shapes.small,
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary
-                )
-            )
-            if (filteredBooks.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Spacing.large),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No results for \"$searchQuery\"",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(bottom = Spacing.extraLarge)
-                ) {
-                    items(filteredBooks) { book ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onBookSelected(book)
-                                    onDismiss()
-                                }
-                                .padding(vertical = Spacing.medium),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = book,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = if (book == selectedBook) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurface
-                            )
-                            if (book == selectedBook) {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(Sizing.iconSmall)
-                                )
-                            }
-                        }
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            thickness = Border.small
-                        )
-                    }
-                }
-            }
-        }
-    }
+    SelectorField(
+        label = "Book",
+        value = selectedBook.ifBlank { "Select book" },
+        onClick = { showBottomSheet = true },
+        modifier = modifier
+    )
 }
 
 @Preview

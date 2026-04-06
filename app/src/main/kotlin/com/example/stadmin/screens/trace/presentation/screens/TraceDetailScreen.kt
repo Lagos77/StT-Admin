@@ -3,6 +3,7 @@ package com.example.stadmin.screens.trace.presentation.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,7 +41,7 @@ import com.example.stadmin.screens.trace.presentation.components.detail.Passages
 import com.example.stadmin.screens.trace.presentation.components.detail.PublishedToggleSection
 import com.example.stadmin.screens.trace.presentation.components.detail.SourcesSection
 import com.example.stadmin.screens.trace.presentation.components.detail.TraceDetailTopBar
-import com.example.stadmin.screens.trace.presentation.components.detail.VideosSection
+import com.example.stadmin.screens.trace.presentation.components.detail.video.VideosSection
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.theme.STAdminTheme
@@ -187,13 +189,21 @@ fun TraceTextField(
     minLines: Int = 1,
     enabled: Boolean = true,
     maxLength: Int = Int.MAX_VALUE,
+    labelTrailingContent: (@Composable () -> Unit)? = null
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline
+            )
+            labelTrailingContent?.invoke()
+        }
         Spacer(modifier = Modifier.height(Spacing.extraSmall))
         OutlinedTextField(
             value = value,
