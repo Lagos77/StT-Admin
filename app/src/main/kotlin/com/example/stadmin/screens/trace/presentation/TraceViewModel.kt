@@ -90,7 +90,13 @@ class TraceViewModel(
             flow.collectLatest { result ->
                 result.fold(
                     onSuccess = {
-                        _viewState.update { it.copy(isSaving = false, saveSuccess = true, pendingImageUrls = emptyList()) }
+                        _viewState.update {
+                            it.copy(
+                                isSaving = false,
+                                saveSuccess = true,
+                                pendingImageUrls = emptyList()
+                            )
+                        }
                     },
                     onFailure = { error ->
                         _viewState.update { it.copy(isSaving = false, error = error.message) }
@@ -144,13 +150,36 @@ class TraceViewModel(
     fun onImageSelected(context: Context, imageType: ImageType, uri: Uri) {
         viewModelScope.launch {
             _viewState.update { it.copy(isUploadingImage = true) }
+
+            val oldUrl = when (imageType) {
+                ImageType.CARD -> _viewState.value.imageUrl
+                ImageType.HERO -> _viewState.value.heroImageUrl
+            }
+
+            if (oldUrl.isNotBlank()) {
+                deleteImageUseCase(oldUrl).collectLatest { result ->
+                    result.fold(
+                        onSuccess = {},
+                        onFailure = { error -> _viewState.update { it.copy(error = error.message) } }
+                    )
+                }
+            }
             uploadImageUseCase(context, uri, imageType).collectLatest { result ->
                 result.fold(
                     onSuccess = { url ->
                         _viewState.update {
-                            when(imageType) {
-                                ImageType.CARD -> it.copy(imageUrl = url, isUploadingImage = false, pendingImageUrls = it.pendingImageUrls + url)
-                                ImageType.HERO -> it.copy(heroImageUrl = url, isUploadingImage = false, pendingImageUrls = it.pendingImageUrls + url)
+                            when (imageType) {
+                                ImageType.CARD -> it.copy(
+                                    imageUrl = url,
+                                    isUploadingImage = false,
+                                    pendingImageUrls = it.pendingImageUrls + url
+                                )
+
+                                ImageType.HERO -> it.copy(
+                                    heroImageUrl = url,
+                                    isUploadingImage = false,
+                                    pendingImageUrls = it.pendingImageUrls + url
+                                )
                             }
                         }
                     },
@@ -170,8 +199,8 @@ class TraceViewModel(
     fun onImageDeleted(imageType: ImageType) {
         viewModelScope.launch {
             val url = when (imageType) {
-                ImageType.CARD -> _viewState.value.heroImageUrl
-                ImageType.HERO -> _viewState.value.imageUrl
+                ImageType.CARD -> _viewState.value.imageUrl
+                ImageType.HERO -> _viewState.value.heroImageUrl
             }
             if (url.isBlank()) {
                 _viewState.update { it.copy(error = "Image url is blank") }
@@ -214,8 +243,6 @@ class TraceViewModel(
     fun onDescriptionChanged(value: String) = _viewState.update { it.copy(description = value) }
     fun onYearChanged(value: String) = _viewState.update { it.copy(year = value) }
     fun onIsNtChanged(value: Boolean) = _viewState.update { it.copy(isNt = value) }
-    fun onImageUrlChanged(value: String) = _viewState.update { it.copy(imageUrl = value) }
-    fun onHeroImageUrlChanged(value: String) = _viewState.update { it.copy(heroImageUrl = value) }
     fun onLatitudeChanged(value: String) = _viewState.update { it.copy(latitude = value) }
     fun onLongitudeChanged(value: String) = _viewState.update { it.copy(longitude = value) }
     fun onPublishedChanged(value: Boolean) = _viewState.update { it.copy(published = value) }

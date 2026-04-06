@@ -1,6 +1,7 @@
 package com.example.stadmin.ui.common
 
 import android.util.Log
+import com.example.stadmin.util.Constants
 
 private const val DATE_TIME_PATTERN = "MMM d, yyyy"
 
@@ -12,7 +13,7 @@ fun formatDate(dateString: String): String {
         )
         date.format(java.time.format.DateTimeFormatter.ofPattern(DATE_TIME_PATTERN))
     } catch (e: Exception) {
-        Log.e("DateFormatter", "Error: ${e.message}")
+        Log.e(Constants.TAG, "DateFormatter error: ${e.message}")
         dateString
     }
 }

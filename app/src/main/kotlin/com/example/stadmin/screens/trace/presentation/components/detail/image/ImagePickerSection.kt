@@ -6,6 +6,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,11 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.presentation.components.list.StatusPill
+import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.theme.STAdminTheme
 import com.yalantis.ucrop.UCrop
 import java.io.File
 
@@ -71,13 +75,13 @@ fun ImagePickerSection(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
+        border = BorderStroke(Border.small, MaterialTheme.colorScheme.outline),
         shape = Shapes.card
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.medium),
+                .padding(vertical = Spacing.extraSmall, horizontal = Spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -105,37 +109,54 @@ fun ImagePickerSection(
                 }
             }
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.extraSmall)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                if (imageUrl.isNotBlank()) {
+                Column(horizontalAlignment = Alignment.End) {
+                    if (imageUrl.isNotBlank()) {
+                        TextButton(
+                            onClick = onImageDeleted,
+                            enabled = !isUploading,
+                            contentPadding = PaddingValues(all = Spacing.extraSmall)
+                        ) {
+                            Text(
+                                text = "Delete",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                     TextButton(
-                        onClick = onImageDeleted,
-                        enabled = !isUploading
+                        onClick = {
+                            pickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        enabled = !isUploading,
+                        contentPadding = PaddingValues(all = Spacing.extraSmall)
                     ) {
                         Text(
-                            text = "Delete",
+                            text = if (imageUrl.isBlank()) "Select Image" else "Change Image",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
-                TextButton(
-                    onClick = {
-                        pickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    enabled = !isUploading
-                ) {
-                    Text(
-                        text = if (imageUrl.isBlank()) "Select Image" else "Change Image",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
             }
-
         }
+    }
+}
+
+@Preview
+@Composable
+private fun Example() {
+    STAdminTheme {
+        ImagePickerSection(
+            type = ImagePickerType.CARD,
+            isUploading = false,
+            imageUrl = "test",
+            onImageCropped = {},
+            onImageDeleted = {},
+        )
     }
 }

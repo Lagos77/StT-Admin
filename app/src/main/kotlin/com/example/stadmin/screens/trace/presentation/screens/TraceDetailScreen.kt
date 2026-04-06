@@ -76,7 +76,7 @@ fun TraceDetailScreen(
                 title = if (isEditMode) "Edit Trace" else "New Trace",
                 isSaving = viewState.isSaving,
                 onBack = { viewModel.onDiscardChanges(onBack) },
-                onSave = { viewModel.saveTrace(trace =  viewState.toTrace()) }
+                onSave = { viewModel.saveTrace(trace = viewState.toTrace()) }
             )
         }
     ) { paddingValues ->
@@ -130,15 +130,15 @@ fun TraceDetailScreen(
                 )
             }
             item {
-                ContentSection(
-                    content = viewState.content,
-                    onContentChanged = viewModel::onContentChanged
-                )
-            }
-            item {
                 PassagesSection(
                     passages = viewState.passages,
                     onPassagesChanged = viewModel::onPassagesChanged
+                )
+            }
+            item {
+                ContentSection(
+                    content = viewState.content,
+                    onContentChanged = viewModel::onContentChanged
                 )
             }
             item {
@@ -186,6 +186,7 @@ fun TraceTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     minLines: Int = 1,
     enabled: Boolean = true,
+    maxLength: Int = Int.MAX_VALUE,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -196,7 +197,7 @@ fun TraceTextField(
         Spacer(modifier = Modifier.height(Spacing.extraSmall))
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = { if (it.length <= maxLength) onValueChange(it) },
             enabled = enabled,
             modifier = Modifier.fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyMedium,
@@ -206,8 +207,9 @@ fun TraceTextField(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
-                disabledBorderColor = MaterialTheme.colorScheme.surfaceVariant,
-                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             )
         )
     }

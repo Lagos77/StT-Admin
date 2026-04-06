@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.stadmin.util.Constants
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -26,7 +27,7 @@ class KeyManager(private val context: Context) {
             }
             true
         } catch (e: Exception) {
-            Log.e("KeyManager saveAccessKey", "Error: ${e.message}")
+            Log.e(Constants.TAG, "KeyManager saveAccessKey error: ${e.message}")
             false
         }
     }
@@ -35,7 +36,7 @@ class KeyManager(private val context: Context) {
         return try {
             context.dataStore.data.map { it[ACCESS_KEY] }.first()
         } catch (e: Exception) {
-            Log.e("KeyManager getAccessKey", "Error: ${e.message}")
+            Log.e(Constants.TAG, "KeyManager getAccessKey error: ${e.message}")
             null
         }
     }
@@ -47,7 +48,7 @@ class KeyManager(private val context: Context) {
             context.dataStore.edit { it.clear() }
             true
         } catch (e: Exception) {
-            Log.e("KeyManager clear", "Error: ${e.message}")
+            Log.e(Constants.TAG, "KeyManager clear error: ${e.message}")
             false
         }
     }

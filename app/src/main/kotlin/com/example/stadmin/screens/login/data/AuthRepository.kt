@@ -6,6 +6,7 @@ import com.example.stadmin.core.supabase.SupabaseTable
 import com.example.stadmin.screens.login.data.model.DeviceDto
 import com.example.stadmin.screens.login.domain.AuthInterface
 import com.example.stadmin.screens.login.domain.model.Device
+import com.example.stadmin.util.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -29,7 +30,7 @@ class AuthRepository : AuthInterface {
                     emit(Result.success(result.first()))
                 }
             } catch (e: Exception) {
-                Log.e("AuthRepository", "Error: ${e.message}")
+                Log.e(Constants.TAG, "AuthRepository error: ${e.message}")
                 emit(Result.failure(e))
             }
         }

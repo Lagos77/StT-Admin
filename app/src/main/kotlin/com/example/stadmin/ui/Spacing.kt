@@ -27,3 +27,7 @@ object Shapes {
     val card = RoundedCornerShape(12.dp)
     val small = RoundedCornerShape(8.dp)
 }
+
+object Border {
+    val small = 0.5.dp
+}

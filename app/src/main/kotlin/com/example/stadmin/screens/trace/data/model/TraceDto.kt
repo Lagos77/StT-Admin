@@ -107,7 +107,7 @@ fun PassageDto.toDomain(): Passage? {
         verseStart = verseStart ?: return null,
         verseEnd = verseEnd,
         text = text ?: return null,
-        version = version
+        version = version ?: "NIV"
     )
 }
 

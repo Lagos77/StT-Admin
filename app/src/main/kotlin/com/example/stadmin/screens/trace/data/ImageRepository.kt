@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import com.example.stadmin.core.supabase.SupabaseClient
 import com.example.stadmin.screens.trace.domain.ImageInterface
 import com.example.stadmin.screens.trace.presentation.ImageType
+import com.example.stadmin.util.Constants
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -37,7 +38,7 @@ class ImageRepository : ImageInterface {
                 val publicUrl = storage[bucket].publicUrl(fileName)
                 emit(Result.success(publicUrl))
             } catch (e: Exception) {
-                Log.e("Failed to upload image:", "${e.message}")
+                Log.e(Constants.TAG, "Failed to upload image: ${e.message}")
                 emit(Result.failure(e))
             }
         }
@@ -54,7 +55,7 @@ class ImageRepository : ImageInterface {
                 storage[bucket].delete(listOf(fileName))
                 emit(Result.success(true))
             } catch (e: Exception) {
-                Log.e("Failed to delete image:", "${e.message}")
+                Log.e(Constants.TAG, "Failed to delete image: ${e.message}")
                 emit(Result.failure(e))
             }
         }

@@ -9,6 +9,7 @@ import com.example.stadmin.screens.trace.data.model.toDomain
 import com.example.stadmin.screens.trace.domain.TraceInterface
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.domain.model.toDto
+import com.example.stadmin.util.Constants
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +32,7 @@ class TraceRepository(
                     .mapNotNull { it.toDomain() }
                 emit(Result.success(result))
             } catch (e: Exception) {
-                Log.e("TraceRepository getTraces()", "Error: ${e.message}")
+                Log.e(Constants.TAG, "TraceRepository getTraces() error: ${e.message}")
                 emit(Result.failure(e))
             }
         }
@@ -44,7 +45,7 @@ class TraceRepository(
                 table.insert(trace.toDto())
                 emit(Result.success(true))
             } catch (e: Exception) {
-                Log.e("TraceRepository createTrace()", "Error: ${e.message}")
+                Log.e(Constants.TAG, "TraceRepository createTrace() error: ${e.message}")
                 emit(Result.failure(e))
             }
         }
@@ -59,7 +60,7 @@ class TraceRepository(
                 }
                 emit(Result.success(true))
             } catch (e: Exception) {
-                Log.e("TraceRepository editTrace()", "Error: ${e.message}")
+                Log.e(Constants.TAG, "TraceRepository editTrace() error: ${e.message}")
                 emit(Result.failure(e))
             }
         }
@@ -74,7 +75,7 @@ class TraceRepository(
                 }
                 emit(Result.success(true))
             } catch (e: Exception) {
-                Log.e("TraceRepository deleteTrace()", "Error: ${e.message}")
+                Log.e(Constants.TAG, "TraceRepository deleteTrace() error: ${e.message}")
                 emit(Result.failure(e))
             }
         }

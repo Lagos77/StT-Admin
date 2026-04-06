@@ -31,6 +31,7 @@ import com.example.stadmin.screens.trace.presentation.ImageType
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerSection
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerType
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
+import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
@@ -108,7 +109,7 @@ private fun TestamentDropdown(
         OutlinedCard(
             onClick = { expanded = true },
             shape = Shapes.small,
-            border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline)
+            border = BorderStroke(Border.small, MaterialTheme.colorScheme.outline)
         ) {
             Row(
                 modifier = Modifier

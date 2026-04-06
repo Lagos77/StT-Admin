@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.theme.STAdminTheme
@@ -92,7 +92,7 @@ private fun DashboardCard(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(
-            width = 0.5.dp,
+            width = Border.small,
             color = MaterialTheme.colorScheme.outline
         ),
         shape = RoundedCornerShape(Sizing.cardRadius)

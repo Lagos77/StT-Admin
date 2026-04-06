@@ -40,8 +40,8 @@ data class Trace(
 
 data class Passage(
     val book: String,
-    val chapter: Int,
-    val verseStart: Int,
+    val chapter: Int?,
+    val verseStart: Int?,
     val verseEnd: Int?,
     val text: String,
     val version: String?
