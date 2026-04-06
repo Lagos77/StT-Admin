@@ -1,17 +1,18 @@
 package com.example.stadmin.screens.trace.presentation.components.detail
 
+import android.location.Geocoder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.PasteButton
 import com.example.stadmin.ui.theme.STAdminTheme
+import java.util.Locale
 
 @Composable
 fun LocationSection(
@@ -20,8 +21,7 @@ fun LocationSection(
     onLatitudeChanged: (String) -> Unit,
     onLongitudeChanged: (String) -> Unit
 ) {
-    val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     SectionCard(
         title = "Location",
@@ -30,9 +30,17 @@ fun LocationSection(
                 label = "Paste",
                 onPaste = { text ->
                     val parts = text.split(",").map { it.trim() }
-                    if (parts.size == 2) {
+                    if (parts.size == 2 && parts[0].toDoubleOrNull() != null) {
                         onLatitudeChanged(parts[0])
                         onLongitudeChanged(parts[1])
+                    } else {
+                        val geocoder = Geocoder(context, Locale.getDefault())
+                        geocoder.getFromLocationName(text, 1) { addresses ->
+                            addresses.firstOrNull()?.let { address ->
+                                onLatitudeChanged(address.latitude.toString())
+                                onLongitudeChanged(address.longitude.toString())
+                            }
+                        }
                     }
                 }
             )
