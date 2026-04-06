@@ -52,7 +52,7 @@ fun SourcesSection(
                         label = "URL",
                         labelTrailingContent = {
                             PasteButton(
-                                label = "Paste",
+                                label = "Paste URL",
                                 onPaste = { text ->
                                     onSourcesChanged(
                                         sources.toMutableList()

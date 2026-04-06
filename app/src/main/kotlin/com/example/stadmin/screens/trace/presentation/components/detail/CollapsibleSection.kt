@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,9 +41,10 @@ fun CollapsibleSection(
     title: String,
     count: Int,
     onAdd: () -> Unit,
+    onAddEnabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(true) } //TODO Alexander
+    var isExpanded by remember { mutableStateOf(false) }
 
     SectionCard(
         title = "$title ($count)",
@@ -52,13 +54,18 @@ fun CollapsibleSection(
                 horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(
+                    enabled = onAddEnabled,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
                     onClick = {
                         onAdd()
                         isExpanded = true
                     },
                     modifier = Modifier
                         .background(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = if (onAddEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                             shape = Shapes.small
                         )
                 ) {

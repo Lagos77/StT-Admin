@@ -1,40 +1,60 @@
 package com.example.stadmin.screens.trace.presentation.components.detail
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
-import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
 fun ContentSection(
     content: List<String>,
     onContentChanged: (List<String>) -> Unit
 ) {
+    var isContentAdded by remember { mutableStateOf(false) }
     CollapsibleSection(
         title = "Content",
+        onAddEnabled = !isContentAdded,
         count = content.size,
-        onAdd = { onContentChanged(content + "") }
+        onAdd = {
+            if (!isContentAdded) {
+                onContentChanged(content + "")
+                isContentAdded = true
+            }
+        }
     ) {
         content.forEachIndexed { index, paragraph ->
-            Row(
-                verticalAlignment = Alignment.Top,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.small)
-            ) {
+            Column(modifier = Modifier) {
                 TraceTextField(
                     label = "Text",
                     value = paragraph,
-                    onValueChange = {newValue ->
+                    onValueChange = { newValue ->
                         onContentChanged(content.toMutableList().also { it[index] = newValue })
                     },
                     minLines = 2
                 )
                 RemoveButton(onClick = {
                     onContentChanged(content.toMutableList().also { it.removeAt(index) })
+                    isContentAdded = false
                 })
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun Example() {
+    STAdminTheme {
+        ContentSection(
+            content = listOf(""),
+            onContentChanged = {},
+        )
     }
 }
