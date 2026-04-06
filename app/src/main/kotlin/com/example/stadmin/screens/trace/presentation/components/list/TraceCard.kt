@@ -1,4 +1,4 @@
-package com.example.stadmin.screens.trace.presentation.screens
+package com.example.stadmin.screens.trace.presentation.components.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -174,7 +174,7 @@ fun TraceCard(
 }
 
 @Composable
-private fun StatusPill(
+fun StatusPill(
     text: String,
     isPositive: Boolean
 ) {

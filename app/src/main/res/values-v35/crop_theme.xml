@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="STAdmin.CropTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:navigationBarColor">#1c2b4a</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="CropTitleStyle">
+        <item name="android:textColor">@android:color/transparent</item>
+    </style>
+
+    <style name="CropTitleStyleBg">
+        <item name="android:background">#1c2b4a</item>
+    </style>
+</resources>

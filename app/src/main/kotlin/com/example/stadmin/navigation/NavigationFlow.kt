@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.screens.dashboard.presentation.DashboardScreen
 import com.example.stadmin.screens.login.presentation.screens.LoginScreen
+import com.example.stadmin.screens.trace.presentation.screens.TraceDetailScreen
 import com.example.stadmin.screens.trace.presentation.screens.TraceListScreen
 
 @Composable
@@ -32,7 +33,14 @@ fun NavigationFlow() {
             onNavigateToDetail = { viewModel.navigateTo(NavigationScreen.TRACE_DETAIL) }
         )
 
-        NavigationScreen.TRACE_DETAIL -> TODO()
+        NavigationScreen.TRACE_DETAIL -> TraceDetailScreen(
+            onBack = {
+                viewModel.navigateTo(
+                    NavigationScreen.TRACE_LIST
+                )
+            },
+            onSaveTrace = { viewModel.navigateTo(NavigationScreen.TRACE_LIST) })
+
         NavigationScreen.HOME_DETAIL -> TODO()
         NavigationScreen.ABOUT_DETAIL -> TODO()
     }

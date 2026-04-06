@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
 import com.example.stadmin.screens.trace.presentation.TraceViewModelFactory
+import com.example.stadmin.screens.trace.presentation.components.list.TraceCard
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
@@ -62,6 +63,13 @@ fun TraceListScreen(
         if (state.deleteSuccess) {
             snackBarHostState.showSnackbar("Trace deleted successfully")
             viewModel.onDeleteSuccessConsumed()
+        }
+    }
+
+    LaunchedEffect(state.saveSuccess) {
+        if (state.saveSuccess) {
+            viewModel.getTraceList()
+            viewModel.onSaveSuccessConsumed()
         }
     }
 

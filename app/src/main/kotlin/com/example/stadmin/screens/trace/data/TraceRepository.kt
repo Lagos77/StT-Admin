@@ -10,13 +10,11 @@ import com.example.stadmin.screens.trace.domain.TraceInterface
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.domain.model.toDto
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.json.buildJsonObject
-import org.slf4j.MDC.put
+import kotlinx.serialization.Serializable
 
-private const val SET_CONFIG_FUNCTION = "set_config"
-private const val ACCESS_KEY_SETTING = "app.access_key"
 private const val FILTER_KEY = "slug"
 
 class TraceRepository(
@@ -82,17 +80,16 @@ class TraceRepository(
         }
     }
 
+    @Serializable
+    data class SetAccessKeyParams(val key: String)
+
     private suspend fun setAccessKey() {
         val accessKey = keyManager.getAccessKey()
             ?: throw Exception("Not authorized")
 
         SupabaseClient.client.postgrest.rpc(
-            SET_CONFIG_FUNCTION,
-            buildJsonObject {
-                put("setting_name", ACCESS_KEY_SETTING)
-                put("new_value", accessKey)
-                put("is_local", "true")
-            }
+            function = "set_app_access_key",
+            parameters = SetAccessKeyParams(key = accessKey)
         )
     }
 }
