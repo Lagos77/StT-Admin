@@ -97,6 +97,7 @@ class TraceViewModel(
                     onSuccess = {
                         _viewState.update {
                             it.copy(
+                                isFirstTimeCreated = isNewTrace,
                                 isSaving = false,
                                 saveSuccess = true,
                                 pendingImageUrls = emptyList(),
@@ -318,6 +319,10 @@ class TraceViewModel(
         _viewState.update { it.copy(saveSuccess = false) }
     }
 
+    fun onFirstTimeCreatedConsumed() {
+        _viewState.update { it.copy(isFirstTimeCreated = false) }
+    }
+
     fun onSnackBarMessageConsumed() {
         _viewState.update { it.copy(snackBarMessage = null) }
     }
@@ -329,6 +334,7 @@ class TraceViewModel(
         val isDeleting: Boolean = false,
         val selectedTrace: Trace? = null,
         val isSaving: Boolean = false,
+        val isFirstTimeCreated: Boolean = false,
         val saveSuccess: Boolean = false,
         val deleteSuccess: Boolean = false,
         val isUploadingImage: Boolean = false,

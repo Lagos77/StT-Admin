@@ -17,13 +17,15 @@ class LoginViewModel(
     private val deviceId: String,
 ) : ViewModel() {
 
+    //TODO Move it to strings
+    private val keyClearedMessage = "Key cleared"
     private val _viewState = MutableStateFlow(LoginViewState())
     val viewState: StateFlow<LoginViewState> = _viewState.asStateFlow()
 
     fun onClear() {
         viewModelScope.launch {
             if (!keyManager.hasAccessKey()) {
-                _viewState.update { it.copy(isAuthenticated = false, error = "Key cleared") }
+                _viewState.update { it.copy(isAuthenticated = false, error = keyClearedMessage) }
             }
         }
     }

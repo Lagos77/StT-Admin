@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_screen_title">Seek the Truth</string>
+    <string name="login_screen_body">Admin panel</string>
+    <string name="login_button">Login</string>
+    <string name="login_auth_message">Only authorized devices can access this panel</string>
+</resources>

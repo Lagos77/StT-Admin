@@ -21,8 +21,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.stadmin.R
 import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
@@ -47,31 +49,31 @@ fun DashboardScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Admin Panel",
+                text = stringResource(R.string.dashboard_screen_title),
                 style = MaterialTheme.typography.headlineMedium
             )
             Spacer(modifier = Modifier.padding(vertical = Spacing.large))
 
             DashboardCard(
-                title = "Traces",
-                subtitle = "Manage God's footprints",
+                title = stringResource(R.string.dashboard_traces_title),
+                subtitle = stringResource(R.string.dashboard_traces_body),
                 onClick = onNavigateToTraces
             )
             DashboardCard(
-                title = "Home",
-                subtitle = "Manage updates & news",
+                title = stringResource(R.string.dashboard_home_title),
+                subtitle = stringResource(R.string.dashboard_home_body),
                 onClick = onNavigateToHome
             )
             DashboardCard(
-                title = "About",
-                subtitle = "Manage about page",
+                title = stringResource(R.string.dashboard_about_title),
+                subtitle = stringResource(R.string.dashboard_about_body),
                 onClick = onNavigateToAbout
             )
 
             Spacer(modifier = Modifier.padding(vertical = Spacing.large))
 
             TextButton(onClick = onSignOut) {
-                Text("Sign out", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.dashboard_sign_out), color = MaterialTheme.colorScheme.error)
             }
         }
     }

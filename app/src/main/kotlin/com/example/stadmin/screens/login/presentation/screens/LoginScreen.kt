@@ -34,12 +34,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.R
 import com.example.stadmin.screens.login.presentation.LoginViewModel
 import com.example.stadmin.screens.login.presentation.LoginViewModelFactory
+import com.example.stadmin.ui.Border
+import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.theme.STAdminTheme
 
@@ -49,15 +50,15 @@ fun LoginScreen(
 ) {
     val viewModel: LoginViewModel =
         viewModel(factory = LoginViewModelFactory(context = LocalContext.current))
-    val state by viewModel.viewState.collectAsState()
+    val viewState by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.onClear()
     }
 
-    LaunchedEffect(state.isAuthenticated) {
-        if (state.isAuthenticated) {
+    LaunchedEffect(viewState.isAuthenticated) {
+        if (viewState.isAuthenticated) {
             onLoginSuccess()
         }
     }
@@ -68,8 +69,8 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(state.error) {
-        state.error?.let { snackBarHostState.showSnackbar(it) }
+    LaunchedEffect(viewState.error) {
+        viewState.error?.let { snackBarHostState.showSnackbar(it) }
     }
 
     Scaffold(
@@ -86,10 +87,10 @@ fun LoginScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .size(72.dp)
+                    .size(Sizing.thumbnailMedium)
                     .background(
                         color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(20.dp)
+                        shape = RoundedCornerShape(Border.medium)
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -97,7 +98,7 @@ fun LoginScreen(
                     imageVector = Icons.Filled.LocationOn,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(Sizing.iconLarge)
                 )
             }
 
@@ -129,39 +130,42 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.extraLarge))
 
-            Button(
-                onClick = viewModel::onLoginClick,
-                enabled = !state.isLoading,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(999.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(Spacing.large),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = Spacing.extraSmall
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.login_button),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontSize = 22.sp
-                    )
-                }
-            }
+            LoginButton(isLoading = viewState.isLoading, onClick = viewModel::onLoginClick)
 
             Spacer(modifier = Modifier.height(Spacing.large))
-
             Text(
-                text = "Only authorized devices can access this panel",
+                text = stringResource(R.string.login_auth_message),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
                 textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoginButton(isLoading: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        enabled = !isLoading,
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(Sizing.thumbnailMedium),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(Spacing.large),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = Spacing.extraSmall
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.login_button),
+                style = MaterialTheme.typography.labelLarge,
+                fontSize = 22.sp
             )
         }
     }

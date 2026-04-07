@@ -30,4 +30,5 @@ object Shapes {
 
 object Border {
     val small = 0.5.dp
+    val medium = 20.dp
 }

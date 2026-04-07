@@ -1,6 +1,3 @@
 <resources>
     <string name="app_name">STAdmin</string>
-    <string name="login_screen_title">Seek the Truth</string>
-    <string name="login_screen_body">Admin panel</string>
-    <string name="login_button">Login</string>
 </resources>

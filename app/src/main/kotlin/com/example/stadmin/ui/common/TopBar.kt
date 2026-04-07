@@ -1,4 +1,4 @@
-package com.example.stadmin.screens.trace.presentation.components.detail
+package com.example.stadmin.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,11 +28,12 @@ import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 
 @Composable
-fun TraceDetailTopBar(
+fun TopBar(
+    type: TopBarType,
     title: String,
-    isSaving: Boolean,
+    isSaving: Boolean = false,
     onBack: () -> Unit,
-    onSave: () -> Unit
+    onAdd: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -42,6 +45,11 @@ fun TraceDetailTopBar(
     ) {
         IconButton(
             onClick = onBack,
+            enabled = !isSaving,
+            colors = IconButtonDefaults.iconButtonColors(
+                disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
             modifier = Modifier
                 .size(Sizing.thumbnailSmall)
                 .background(
@@ -56,33 +64,65 @@ fun TraceDetailTopBar(
                 modifier = Modifier.size(Sizing.iconMedium)
             )
         }
-
         Text(
             text = title,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        Button(
-            onClick = onSave,
-            enabled = !isSaving,
-            shape = Shapes.pill,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            if (isSaving) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(Sizing.iconSmall),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = Spacing.extraSmall
-                )
-            } else {
-                Text(
-                    text = "Save",
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
+        when (type) {
+            TopBarType.LIST -> AddButton(onClick = onAdd)
+            TopBarType.SAVE -> SaveButton(onClick = onAdd, isSaving = isSaving)
         }
     }
+}
+
+@Composable
+private fun AddButton(onClick: () -> Unit) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(Sizing.thumbnailSmall)
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = Shapes.small
+            )
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add trace",
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(Sizing.iconMedium)
+        )
+    }
+}
+
+@Composable
+private fun SaveButton(onClick: () -> Unit, isSaving: Boolean) {
+    Button(
+        onClick = onClick,
+        enabled = !isSaving,
+        shape = Shapes.pill,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        if (isSaving) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(Sizing.iconSmall),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = Spacing.extraSmall
+            )
+        } else {
+            Text(
+                text = "Save",
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+    }
+}
+
+enum class TopBarType {
+    LIST,
+    SAVE,
 }

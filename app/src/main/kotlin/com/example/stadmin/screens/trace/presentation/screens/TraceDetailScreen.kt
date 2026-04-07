@@ -26,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.stadmin.R
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
 import com.example.stadmin.screens.trace.presentation.TraceViewModel.TraceViewState
@@ -40,10 +42,11 @@ import com.example.stadmin.screens.trace.presentation.components.detail.Location
 import com.example.stadmin.screens.trace.presentation.components.detail.PassagesSection
 import com.example.stadmin.screens.trace.presentation.components.detail.PublishedToggleSection
 import com.example.stadmin.screens.trace.presentation.components.detail.SourcesSection
-import com.example.stadmin.screens.trace.presentation.components.detail.TraceDetailTopBar
 import com.example.stadmin.screens.trace.presentation.components.detail.video.VideosSection
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.common.TopBar
+import com.example.stadmin.ui.common.TopBarType
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -63,15 +66,27 @@ fun TraceDetailScreen(
         }
     }
 
+    LaunchedEffect(viewState.isFirstTimeCreated) {
+        if (viewState.isFirstTimeCreated) {
+            viewModel.onFirstTimeCreatedConsumed()
+            onBack()
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
-            TraceDetailTopBar(
-                title = if (isEditMode) "Edit Trace" else "New Trace",
+            TopBar(
+                type = TopBarType.SAVE,
+                title = if (isEditMode) {
+                    stringResource(R.string.trace_details_edit_title)
+                } else {
+                    stringResource(R.string.trace_details_new_title)
+                },
                 isSaving = viewState.isSaving,
                 onBack = { viewModel.onDiscardChanges(onBack) },
-                onSave = { viewModel.saveTrace(trace = viewState.toTrace()) }
+                onAdd = { viewModel.saveTrace(trace = viewState.toTrace()) }
             )
         }
     ) { paddingValues ->
