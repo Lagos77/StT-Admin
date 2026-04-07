@@ -41,7 +41,6 @@ fun CollapsibleSection(
     title: String,
     count: Int,
     onAdd: () -> Unit,
-    onAddEnabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -54,7 +53,6 @@ fun CollapsibleSection(
                 horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(
-                    enabled = onAddEnabled,
                     colors = IconButtonDefaults.iconButtonColors(
                         disabledContentColor = MaterialTheme.colorScheme.onSurface,
                         disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -65,7 +63,7 @@ fun CollapsibleSection(
                     },
                     modifier = Modifier
                         .background(
-                            color = if (onAddEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            color = MaterialTheme.colorScheme.primary,
                             shape = Shapes.small
                         )
                 ) {

@@ -2,10 +2,6 @@ package com.example.stadmin.screens.trace.presentation.components.detail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
@@ -17,16 +13,11 @@ fun ContentSection(
     content: List<String>,
     onContentChanged: (List<String>) -> Unit
 ) {
-    var isContentAdded by remember { mutableStateOf(false) }
     CollapsibleSection(
         title = "Content",
-        onAddEnabled = !isContentAdded,
         count = content.size,
         onAdd = {
-            if (!isContentAdded) {
                 onContentChanged(content + "")
-                isContentAdded = true
-            }
         }
     ) {
         content.forEachIndexed { index, paragraph ->
@@ -41,7 +32,6 @@ fun ContentSection(
                 )
                 RemoveButton(onClick = {
                     onContentChanged(content.toMutableList().also { it.removeAt(index) })
-                    isContentAdded = false
                 })
             }
         }
