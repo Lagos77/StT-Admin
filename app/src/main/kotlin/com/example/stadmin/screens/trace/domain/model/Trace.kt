@@ -6,7 +6,7 @@ import com.example.stadmin.screens.trace.data.model.TraceDto
 import com.example.stadmin.screens.trace.data.model.VideoDto
 
 data class Trace(
-    val id: Int,
+    val id: Int?,
     val slug: String,
     val title: String,
     val description: String?,

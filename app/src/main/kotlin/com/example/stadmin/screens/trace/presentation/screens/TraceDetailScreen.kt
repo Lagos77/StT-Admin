@@ -153,7 +153,7 @@ fun TraceDetailScreen(
 }
 
 private fun TraceViewState.toTrace(): Trace = Trace(
-    id = selectedTrace?.id ?: 0,
+    id = selectedTrace?.id,
     slug = slug,
     title = title,
     description = description.ifBlank { null },
