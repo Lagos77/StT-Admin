@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.presentation.ImageType
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerSection
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerType
@@ -41,14 +42,14 @@ fun BasicInfoSection(
     title: String,
     slug: String,
     year: String,
-    isNt: Boolean,
+    era: TraceEra,
     imageUrl: String,
     heroImageUrl: String,
     isUploadingImage: Boolean,
     onTitleChanged: (String) -> Unit,
     onSlugChanged: (String) -> Unit,
     onYearChanged: (String) -> Unit,
-    onIsNtChanged: (Boolean) -> Unit,
+    onEraChanged: (TraceEra) -> Unit,
     onImageSelected: (ImageType, Uri) -> Unit,
     onImageDeleted: (ImageType) -> Unit,
 ) {
@@ -68,9 +69,9 @@ fun BasicInfoSection(
                 keyboardType = KeyboardType.Number,
                 modifier = Modifier.weight(1f)
             )
-            TestamentDropdown(
-                isNt = isNt,
-                onIsNtChanged = onIsNtChanged,
+            EraDropdown(
+                era = era,
+                onEraChanged = onEraChanged,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -91,10 +92,18 @@ fun BasicInfoSection(
     }
 }
 
+private val ERA_LABELS = mapOf(
+    TraceEra.OT to "Old Testament",
+    TraceEra.NT to "New Testament",
+    TraceEra.MODERN to "Modern Era",
+    TraceEra.PROPHECY to "Prophecy",
+    TraceEra.UNKNOWN to "Unknown",
+)
+
 @Composable
-private fun TestamentDropdown(
-    isNt: Boolean,
-    onIsNtChanged: (Boolean) -> Unit,
+private fun EraDropdown(
+    era: TraceEra,
+    onEraChanged: (TraceEra) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -119,7 +128,7 @@ private fun TestamentDropdown(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if (isNt) "New" else "Old",
+                    text = ERA_LABELS[era] ?: "Unknown",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -133,22 +142,18 @@ private fun TestamentDropdown(
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            containerColor = MaterialTheme.colorScheme.surface,
         ) {
-            DropdownMenuItem(
-                text = { Text("Old Testament") },
-                onClick = {
-                    onIsNtChanged(false)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("New Testament") },
-                onClick = {
-                    onIsNtChanged(true)
-                    expanded = false
-                }
-            )
+            TraceEra.entries.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(ERA_LABELS[option] ?: "Unknown") },
+                    onClick = {
+                        onEraChanged(option)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }

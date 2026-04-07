@@ -4,6 +4,7 @@ import com.example.stadmin.screens.trace.data.model.PassageDto
 import com.example.stadmin.screens.trace.data.model.SourceDto
 import com.example.stadmin.screens.trace.data.model.TraceDto
 import com.example.stadmin.screens.trace.data.model.VideoDto
+import com.example.stadmin.screens.trace.domain.TraceEra
 
 data class Trace(
     val id: Int?,
@@ -11,7 +12,7 @@ data class Trace(
     val title: String,
     val description: String?,
     val year: Int?,
-    val isNt: Boolean,
+    val era: TraceEra,
     val imageUrl: String?,
     val heroImageUrl: String?,
     val latitude: Double?,
@@ -65,7 +66,7 @@ fun Trace.toDto(): TraceDto = TraceDto(
     title = title,
     description = description,
     year = year,
-    isNt = isNt,
+    era = era.value,
     imageUrl = imageUrl,
     heroImageUrl = heroImageUrl,
     latitude = latitude,

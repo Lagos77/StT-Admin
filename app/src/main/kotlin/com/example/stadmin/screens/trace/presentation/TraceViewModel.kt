@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.screens.trace.domain.model.Source
 import com.example.stadmin.screens.trace.domain.model.Trace
@@ -255,7 +256,7 @@ class TraceViewModel(
     fun onSlugChanged(value: String) = _viewState.update { it.copy(slug = value) }
     fun onDescriptionChanged(value: String) = _viewState.update { it.copy(description = value) }
     fun onYearChanged(value: String) = _viewState.update { it.copy(year = value) }
-    fun onIsNtChanged(value: Boolean) = _viewState.update { it.copy(isNt = value) }
+    fun onEraChanged(value: TraceEra) = _viewState.update { it.copy(era = value) }
     fun onLatitudeChanged(value: String) = _viewState.update { it.copy(latitude = value) }
     fun onLongitudeChanged(value: String) = _viewState.update { it.copy(longitude = value) }
     fun onPublishedChanged(value: Boolean) = _viewState.update { it.copy(published = value) }
@@ -268,7 +269,7 @@ class TraceViewModel(
                 slug = trace.slug,
                 description = trace.description ?: "",
                 year = trace.year?.toString() ?: "",
-                isNt = trace.isNt,
+                era = trace.era,
                 imageUrl = trace.imageUrl ?: "",
                 heroImageUrl = trace.heroImageUrl ?: "",
                 latitude = trace.latitude?.toString() ?: "",
@@ -290,7 +291,7 @@ class TraceViewModel(
                 slug = "",
                 description = "",
                 year = "",
-                isNt = false,
+                era = TraceEra.UNKNOWN,
                 imageUrl = "",
                 heroImageUrl = "",
                 latitude = "",
@@ -345,7 +346,7 @@ class TraceViewModel(
         val slug: String = "",
         val description: String = "",
         val year: String = "",
-        val isNt: Boolean = false,
+        val era: TraceEra = TraceEra.UNKNOWN,
         val imageUrl: String = "",
         val heroImageUrl: String = "",
         val latitude: String = "",

@@ -1,5 +1,6 @@
 package com.example.stadmin.screens.trace.data.model
 
+import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.screens.trace.domain.model.Source
 import com.example.stadmin.screens.trace.domain.model.Trace
@@ -19,8 +20,8 @@ data class TraceDto(
     val description: String? = null,
     @SerialName("year")
     val year: Int? = null,
-    @SerialName("is_nt")
-    val isNt: Boolean? = null,
+    @SerialName("era")
+    val era: String? = null,
     @SerialName("image_url")
     val imageUrl: String? = null,
     @SerialName("hero_image_url")
@@ -85,7 +86,7 @@ fun TraceDto.toDomain(): Trace? {
         title = title ?: return null,
         description = description,
         year = year,
-        isNt = isNt ?: false,
+        era = TraceEra.fromValue(era),
         imageUrl = imageUrl,
         heroImageUrl = heroImageUrl,
         latitude = latitude,

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
+import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
@@ -104,14 +105,14 @@ fun TraceCard(
                     horizontalArrangement = Arrangement.spacedBy(Spacing.small)
                 ) {
                     Text(
-                        text = if (trace.isNt) "NT" else "OT",
+                        text = eraLabel(trace.era),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (trace.isNt) Color(0xFF2E5F8A) else Color(0xFF8B3A3A)
+                        color = eraColor(trace.era)
                     )
                     trace.year?.let {
                         Text(
-                            text = if (it < 0) "c. ${Math.abs(it)} BC" else "c. $it AD",
+                            text = formatYear(year = it),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline
                         )
@@ -173,6 +174,28 @@ fun TraceCard(
     }
 }
 
+private fun eraLabel(era: TraceEra): String = when (era) {
+    TraceEra.OT -> "Old Testament"
+    TraceEra.NT -> "New Testament"
+    TraceEra.MODERN -> "Modern Era"
+    TraceEra.PROPHECY -> "Prophecy"
+    TraceEra.UNKNOWN -> "Unknown"
+}
+
+private fun eraColor(era: TraceEra): Color = when (era) {
+    TraceEra.OT -> Color(0xFF8B3A3A)
+    TraceEra.NT -> Color(0xFF2E5F8A)
+    TraceEra.MODERN -> Color(0xFF059669)
+    TraceEra.PROPHECY -> Color(0xFFD97706)
+    TraceEra.UNKNOWN -> Color(0xFF6B7280)
+}
+
+private fun formatYear(year: Int): String = when {
+    year < 0 -> "c. ${Math.abs(year)} BC"
+    year < 1900 -> "c. $year AD"
+    else -> "$year"
+}
+
 @Composable
 fun StatusPill(
     text: String,
@@ -202,7 +225,7 @@ private fun Example() {
                 title = "Noah's Ark",
                 description = "A large wooden vessel built by Noah to save his family.",
                 year = -2500,
-                isNt = false,
+                era = TraceEra.OT,
                 imageUrl = null,
                 heroImageUrl = null,
                 latitude = 39.72,

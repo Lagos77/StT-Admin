@@ -109,14 +109,14 @@ fun TraceDetailScreen(
                     title = viewState.title,
                     slug = viewState.slug,
                     year = viewState.year,
-                    isNt = viewState.isNt,
+                    era = viewState.era,
                     imageUrl = viewState.imageUrl,
                     heroImageUrl = viewState.heroImageUrl,
                     isUploadingImage = viewState.isUploadingImage,
                     onTitleChanged = viewModel::onTitleChanged,
                     onSlugChanged = viewModel::onSlugChanged,
                     onYearChanged = viewModel::onYearChanged,
-                    onIsNtChanged = viewModel::onIsNtChanged,
+                    onEraChanged = viewModel::onEraChanged,
                     onImageSelected = { imageType, uri ->
                         viewModel.onImageSelected(
                             context = context, imageType = imageType, uri = uri
@@ -173,7 +173,7 @@ private fun TraceViewState.toTrace(): Trace = Trace(
     title = title,
     description = description.ifBlank { null },
     year = year.toIntOrNull(),
-    isNt = isNt,
+    era = era,
     imageUrl = imageUrl.ifBlank { null },
     heroImageUrl = heroImageUrl.ifBlank { null },
     latitude = latitude.toDoubleOrNull(),
