@@ -22,11 +22,12 @@ class LoginViewModel(
 
     fun onClear() {
         viewModelScope.launch {
-            if (keyManager.clear()) {
+            if (!keyManager.hasAccessKey()) {
                 _viewState.update { it.copy(isAuthenticated = false, error = "Key cleared") }
             }
         }
     }
+
     fun onClearAuthenticated() {
         _viewState.update { it.copy(isAuthenticated = false) }
     }
@@ -34,16 +35,20 @@ class LoginViewModel(
     fun onLoginClick() {
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, error = null) }
-            getAccessKeyUseCase.invoke(deviceId = deviceId).collectLatest { result ->
-                result.fold(
-                    onSuccess = { device ->
-                    keyManager.saveAccessKey(device.accessKey)
-                        _viewState.update { it.copy(isLoading = false, isAuthenticated = true) }
-                    },
-                    onFailure = { error ->
-                        _viewState.update { it.copy(isLoading = false, error = error.message) }
-                    }
-                )
+            if (keyManager.hasAccessKey()) {
+                _viewState.update { it.copy(isLoading = false, isAuthenticated = true) }
+            } else {
+                getAccessKeyUseCase.invoke(deviceId = deviceId).collectLatest { result ->
+                    result.fold(
+                        onSuccess = { device ->
+                            keyManager.saveAccessKey(device.accessKey)
+                            _viewState.update { it.copy(isLoading = false, isAuthenticated = true) }
+                        },
+                        onFailure = { error ->
+                            _viewState.update { it.copy(isLoading = false, error = error.message) }
+                        }
+                    )
+                }
             }
         }
     }

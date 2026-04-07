@@ -3,6 +3,7 @@ package com.example.stadmin.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.screens.dashboard.presentation.DashboardScreen
 import com.example.stadmin.screens.login.presentation.screens.LoginScreen
@@ -11,7 +12,7 @@ import com.example.stadmin.screens.trace.presentation.screens.TraceListScreen
 
 @Composable
 fun NavigationFlow() {
-    val viewModel: AppViewModel = viewModel()
+    val viewModel: AppViewModel = viewModel(factory = AppViewModelFactory(LocalContext.current))
     val currentScreen by viewModel.currentScreen.collectAsState()
 
     when (currentScreen) {
@@ -25,7 +26,7 @@ fun NavigationFlow() {
             onNavigateToTraces = { viewModel.navigateTo(NavigationScreen.TRACE_LIST) },
             onNavigateToHome = { viewModel.navigateTo(NavigationScreen.HOME_DETAIL) },
             onNavigateToAbout = { viewModel.navigateTo(NavigationScreen.ABOUT_DETAIL) },
-            onSignOut = { viewModel.navigateTo(NavigationScreen.LOGIN) },
+            onSignOut = viewModel::onSignOut,
         )
 
         NavigationScreen.TRACE_LIST -> TraceListScreen(
@@ -39,9 +40,9 @@ fun NavigationFlow() {
                     NavigationScreen.TRACE_LIST
                 )
             },
-            onSaveTrace = { viewModel.navigateTo(NavigationScreen.TRACE_LIST) })
+        )
 
-        NavigationScreen.HOME_DETAIL -> TODO()
-        NavigationScreen.ABOUT_DETAIL -> TODO()
+        NavigationScreen.HOME_DETAIL -> {}
+        NavigationScreen.ABOUT_DETAIL -> {}
     }
 }

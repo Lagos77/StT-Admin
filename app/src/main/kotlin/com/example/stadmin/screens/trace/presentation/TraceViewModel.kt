@@ -39,14 +39,19 @@ class TraceViewModel(
 
     fun getTraceList() {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true, error = null) }
+            _viewState.update { it.copy(isLoading = true, snackBarMessage = null) }
             getTracesUseCase.invoke().collectLatest { result ->
                 result.fold(
                     onSuccess = { traces ->
                         _viewState.update { it.copy(isLoading = false, traces = traces) }
                     },
                     onFailure = { error ->
-                        _viewState.update { it.copy(isLoading = false, error = error.message) }
+                        _viewState.update {
+                            it.copy(
+                                isLoading = false,
+                                snackBarMessage = error.message
+                            )
+                        }
                     }
                 )
             }
@@ -55,7 +60,7 @@ class TraceViewModel(
 
     fun deleteTrace(slug: String) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isDeleting = true, error = null) }
+            _viewState.update { it.copy(isDeleting = true, snackBarMessage = null) }
             deleteTraceUseCase(slug).collectLatest { result ->
                 result.fold(
                     onSuccess = {
@@ -69,7 +74,7 @@ class TraceViewModel(
                     },
                     onFailure = { error ->
                         _viewState.update {
-                            it.copy(isDeleting = false, error = error.message)
+                            it.copy(isDeleting = false, snackBarMessage = error.message)
                         }
                     }
                 )
@@ -79,7 +84,7 @@ class TraceViewModel(
 
     fun saveTrace(trace: Trace) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isSaving = true, error = null) }
+            _viewState.update { it.copy(isSaving = true, snackBarMessage = null) }
             val isNewTrace = _viewState.value.selectedTrace == null
             val flow = if (isNewTrace) {
                 createTraceUseCase(trace)
@@ -94,12 +99,19 @@ class TraceViewModel(
                             it.copy(
                                 isSaving = false,
                                 saveSuccess = true,
-                                pendingImageUrls = emptyList()
+                                pendingImageUrls = emptyList(),
+                                snackBarMessage = if (isNewTrace) "New trace saved!" else "Edit saved!"
                             )
                         }
                     },
                     onFailure = { error ->
-                        _viewState.update { it.copy(isSaving = false, error = error.message) }
+                        _viewState.update {
+                            it.copy(
+                                isSaving = false,
+                                saveSuccess = false,
+                                snackBarMessage = error.message
+                            )
+                        }
                     }
                 )
             }
@@ -160,7 +172,7 @@ class TraceViewModel(
                 deleteImageUseCase(oldUrl).collectLatest { result ->
                     result.fold(
                         onSuccess = {},
-                        onFailure = { error -> _viewState.update { it.copy(error = error.message) } }
+                        onFailure = { error -> _viewState.update { it.copy(snackBarMessage = error.message) } }
                     )
                 }
             }
@@ -187,7 +199,7 @@ class TraceViewModel(
                         _viewState.update {
                             it.copy(
                                 isUploadingImage = false,
-                                error = error.message
+                                snackBarMessage = error.message
                             )
                         }
                     }
@@ -203,7 +215,7 @@ class TraceViewModel(
                 ImageType.HERO -> _viewState.value.heroImageUrl
             }
             if (url.isBlank()) {
-                _viewState.update { it.copy(error = "Image url is blank") }
+                _viewState.update { it.copy(snackBarMessage = "Image url is blank") }
                 return@launch
             }
             deleteImageUseCase(url).collectLatest { result ->
@@ -216,7 +228,7 @@ class TraceViewModel(
                             }
                         }
                     },
-                    onFailure = { error -> _viewState.update { it.copy(error = error.message) } }
+                    onFailure = { error -> _viewState.update { it.copy(snackBarMessage = error.message) } }
                 )
             }
         }
@@ -230,7 +242,7 @@ class TraceViewModel(
                     result.fold(
                         onSuccess = {
                         },
-                        onFailure = { error -> _viewState.update { it.copy(error = error.message) } }
+                        onFailure = { error -> _viewState.update { it.copy(snackBarMessage = error.message) } }
                     )
                 }
             }
@@ -306,14 +318,14 @@ class TraceViewModel(
         _viewState.update { it.copy(saveSuccess = false) }
     }
 
-    fun onErrorConsumed() {
-        _viewState.update { it.copy(error = null) }
+    fun onSnackBarMessageConsumed() {
+        _viewState.update { it.copy(snackBarMessage = null) }
     }
 
     data class TraceViewState(
         val traces: List<Trace> = emptyList(),
         val isLoading: Boolean = false,
-        val error: String? = null,
+        val snackBarMessage: String? = null,
         val isDeleting: Boolean = false,
         val selectedTrace: Trace? = null,
         val isSaving: Boolean = false,

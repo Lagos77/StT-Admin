@@ -52,10 +52,10 @@ fun TraceListScreen(
     val state by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(state.error) {
-        state.error?.let {
+    LaunchedEffect(state.snackBarMessage) {
+        state.snackBarMessage?.let {
             snackBarHostState.showSnackbar(it)
-            viewModel.onErrorConsumed()
+            viewModel.onSnackBarMessageConsumed()
         }
     }
 
@@ -79,7 +79,7 @@ fun TraceListScreen(
         topBar = {
             TraceListTopBar(
                 onBack = {
-                    viewModel.onErrorConsumed()
+                    viewModel.onSnackBarMessageConsumed()
                     onBack()
                 },
                 onAdd = {

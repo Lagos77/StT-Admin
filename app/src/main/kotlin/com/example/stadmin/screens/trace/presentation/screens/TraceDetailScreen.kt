@@ -49,7 +49,6 @@ import com.example.stadmin.ui.theme.STAdminTheme
 @Composable
 fun TraceDetailScreen(
     onBack: () -> Unit,
-    onSaveTrace: () -> Unit,
 ) {
     val context = LocalContext.current
     val viewModel: TraceViewModel = viewModel(factory = TraceViewModelFactory(context))
@@ -57,16 +56,10 @@ fun TraceDetailScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val isEditMode = viewState.selectedTrace != null
 
-    LaunchedEffect(viewState.error) {
-        viewState.error?.let {
+    LaunchedEffect(viewState.snackBarMessage) {
+        viewState.snackBarMessage?.let {
             snackBarHostState.showSnackbar(it)
-            viewModel.onErrorConsumed()
-        }
-    }
-
-    LaunchedEffect(viewState.saveSuccess) {
-        if (viewState.saveSuccess) {
-            onSaveTrace()
+            viewModel.onSnackBarMessageConsumed()
         }
     }
 
@@ -231,7 +224,6 @@ private fun Example() {
     STAdminTheme {
         TraceDetailScreen(
             onBack = {},
-            onSaveTrace = {}
         )
     }
 }
