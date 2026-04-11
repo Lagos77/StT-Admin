@@ -5,6 +5,7 @@ import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.screens.trace.domain.model.Source
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.domain.model.Video
+import com.example.stadmin.util.Constants
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -108,7 +109,7 @@ fun PassageDto.toDomain(): Passage? {
         verseStart = verseStart ?: return null,
         verseEnd = verseEnd,
         text = text ?: return null,
-        version = version ?: "NIV"
+        version = version ?: Constants.Versions.NEW_INTERNATIONAL_VERSION
     )
 }
 

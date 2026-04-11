@@ -29,10 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
+import com.example.stadmin.R
 import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.ui.Border
@@ -41,6 +43,7 @@ import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.formatDate
 import com.example.stadmin.ui.theme.STAdminTheme
+import kotlin.math.abs
 
 @Composable
 fun TraceCard(
@@ -83,7 +86,7 @@ fun TraceCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.medium),
+                .padding(vertical = Spacing.small, horizontal = Spacing.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.medium)
         ) {
@@ -94,6 +97,7 @@ fun TraceCard(
                     .size(Sizing.thumbnailMedium)
                     .clip(Shapes.small)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
+                placeholder = painterResource(R.drawable.ic_launcher_background),
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -101,8 +105,9 @@ fun TraceCard(
                 verticalArrangement = Arrangement.spacedBy(Spacing.extraSmall)
             ) {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.small)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
                         text = eraLabel(trace.era),
@@ -130,8 +135,9 @@ fun TraceCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.small)
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     StatusPill(
                         text = if (trace.isComplete) "Complete" else "Incomplete",
@@ -191,7 +197,7 @@ private fun eraColor(era: TraceEra): Color = when (era) {
 }
 
 private fun formatYear(year: Int): String = when {
-    year < 0 -> "c. ${Math.abs(year)} BC"
+    year < 0 -> "c. ${abs(year)} BC"
     year < 1900 -> "c. $year AD"
     else -> "$year"
 }
@@ -225,7 +231,7 @@ private fun Example() {
                 title = "Noah's Ark",
                 description = "A large wooden vessel built by Noah to save his family.",
                 year = -2500,
-                era = TraceEra.OT,
+                era = TraceEra.NT,
                 imageUrl = null,
                 heroImageUrl = null,
                 latitude = 39.72,

@@ -1,4 +1,4 @@
-package com.example.stadmin.screens.trace.presentation.screens
+package com.example.stadmin.screens.tracelist.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

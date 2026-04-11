@@ -1,19 +1,18 @@
 package com.example.stadmin.screens.trace.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -23,17 +22,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.R
-import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
-import com.example.stadmin.screens.trace.presentation.TraceViewModel.TraceViewState
 import com.example.stadmin.screens.trace.presentation.TraceViewModelFactory
 import com.example.stadmin.screens.trace.presentation.components.detail.BasicInfoSection
 import com.example.stadmin.screens.trace.presentation.components.detail.ContentSection
@@ -43,7 +38,8 @@ import com.example.stadmin.screens.trace.presentation.components.detail.Passages
 import com.example.stadmin.screens.trace.presentation.components.detail.PublishedToggleSection
 import com.example.stadmin.screens.trace.presentation.components.detail.SourcesSection
 import com.example.stadmin.screens.trace.presentation.components.detail.video.VideosSection
-import com.example.stadmin.ui.Shapes
+import com.example.stadmin.screens.trace.presentation.toTrace
+import com.example.stadmin.translation.presentation.screens.TranslationBottomSheet
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.TopBar
 import com.example.stadmin.ui.common.TopBarType
@@ -163,73 +159,42 @@ fun TraceDetailScreen(
                     onSourcesChanged = viewModel::onSourcesChanged
                 )
             }
+            if (isEditMode) {
+                item {
+                    OutlinedButton(
+                        onClick = viewModel::onShowTranslationSheet,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Language, contentDescription = null)
+                        Spacer(modifier = Modifier.width(Spacing.extraSmall))
+                        Text("Manage translations")
+                    }
+                }
+            }
         }
     }
-}
-
-private fun TraceViewState.toTrace(): Trace = Trace(
-    id = selectedTrace?.id,
-    slug = slug,
-    title = title,
-    description = description.ifBlank { null },
-    year = year.toIntOrNull(),
-    era = era,
-    imageUrl = imageUrl.ifBlank { null },
-    heroImageUrl = heroImageUrl.ifBlank { null },
-    latitude = latitude.toDoubleOrNull(),
-    longitude = longitude.toDoubleOrNull(),
-    content = content.filter { it.isNotBlank() },
-    passages = passages,
-    videos = videos,
-    sources = sources,
-    published = published,
-    createdAt = selectedTrace?.createdAt,
-    updatedAt = selectedTrace?.updatedAt
-)
-
-@Composable
-fun TraceTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    minLines: Int = 1,
-    enabled: Boolean = true,
-    maxLength: Int = Int.MAX_VALUE,
-    labelTrailingContent: (@Composable () -> Unit)? = null
-) {
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
+    if (viewState.showTranslationSheet) {
+        viewState.selectedTrace?.let { trace ->
+            TranslationBottomSheet(
+                baseTrace = trace,
+                viewState = viewState,
+                onLanguageChanged = viewModel::onLanguageChanged,
+                onTitleChanged = viewModel::onTitleTranslatedChanged,
+                onDescriptionChanged = viewModel::onDescriptionTranslatedChanged,
+                onContentChanged = viewModel::onContentTranslatedChanged,
+                onPassagesChanged = viewModel::onPassagesTranslatedChanged,
+                onVideosChanged = viewModel::onVideosTranslatedChanged,
+                onSaveSuccessConsumed = viewModel::onTranslationSaveSuccessConsumed,
+                onNewTranslation = viewModel::onNewTranslation,
+                onTranslationSelected = viewModel::onTranslationSelected,
+                onSave = { viewModel.saveTranslation(it) },
+                onDelete = { viewModel.deleteTranslation(it, trace.slug) },
+                onDismiss = {
+                    viewModel.onHideTranslationSheet()
+                    viewModel.onNewTranslation()
+                }
             )
-            labelTrailingContent?.invoke()
         }
-        Spacer(modifier = Modifier.height(Spacing.extraSmall))
-        OutlinedTextField(
-            value = value,
-            onValueChange = { if (it.length <= maxLength) onValueChange(it) },
-            enabled = enabled,
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = MaterialTheme.typography.bodyMedium,
-            shape = Shapes.small,
-            minLines = minLines,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-        )
     }
 }
 

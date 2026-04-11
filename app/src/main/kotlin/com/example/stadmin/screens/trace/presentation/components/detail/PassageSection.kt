@@ -17,14 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.domain.model.Passage
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
+import com.example.stadmin.translation.presentation.TranslationLanguage
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.buttons.RemoveButton
+import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.common.SelectionBottomSheet
 import com.example.stadmin.ui.common.SelectorField
 import com.example.stadmin.ui.theme.STAdminTheme
-import com.example.stadmin.util.Constants.BIBLE_BOOKS
+import com.example.stadmin.util.Constants
 
 @Composable
 fun PassagesSection(
@@ -34,7 +35,7 @@ fun PassagesSection(
     CollapsibleSection(
         title = "Passages",
         count = passages.size,
-        onAdd = { onPassagesChanged(passages + Passage("", null, null, null, "", "NIV")) }
+        onAdd = { onPassagesChanged(passages + Passage("", null, null, null, "", Constants.Versions.NEW_INTERNATIONAL_VERSION)) }
     ) {
         passages.forEachIndexed { index, passage ->
             Card(
@@ -52,6 +53,7 @@ fun PassagesSection(
                     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
                         BibleBookSelector(
                             selectedBook = passage.book,
+                            language = null,
                             onBookSelected = {
                                 onPassagesChanged(
                                     passages.toMutableList().also { list ->
@@ -61,7 +63,7 @@ fun PassagesSection(
                             },
                             modifier = Modifier.weight(2f)
                         )
-                        TraceTextField(
+                        CustomTextField(
                             label = "Chapter",
                             value = passage.chapter?.toString() ?: "",
                             onValueChange = {
@@ -77,7 +79,7 @@ fun PassagesSection(
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-                        TraceTextField(
+                        CustomTextField(
                             label = "Verse Start",
                             value = passage.verseStart?.toString() ?: "",
                             onValueChange = {
@@ -91,7 +93,7 @@ fun PassagesSection(
                             maxLength = 3,
                             modifier = Modifier.weight(1f)
                         )
-                        TraceTextField(
+                        CustomTextField(
                             label = "Verse End",
                             value = passage.verseEnd?.toString() ?: "",
                             onValueChange = {
@@ -105,7 +107,7 @@ fun PassagesSection(
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    TraceTextField(
+                    CustomTextField(
                         label = "Text",
                         value = passage.text,
                         onValueChange = {
@@ -129,14 +131,22 @@ fun PassagesSection(
 fun BibleBookSelector(
     selectedBook: String,
     onBookSelected: (String) -> Unit,
+    language: TranslationLanguage?,
     modifier: Modifier = Modifier
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
 
+    val books = when (language) {
+        TranslationLanguage.ES -> Constants.BIBLE_BOOKS_ES
+        TranslationLanguage.PT -> Constants.BIBLE_BOOKS_PT
+        TranslationLanguage.SV -> Constants.BIBLE_BOOKS_SV
+        null -> Constants.BIBLE_BOOKS_EN
+    }
+
     if (showBottomSheet) {
         SelectionBottomSheet(
             title = "Select Book",
-            items = BIBLE_BOOKS,
+            items = books,
             selectedItem = selectedBook,
             onItemSelected = onBookSelected,
             onDismiss = { showBottomSheet = false },

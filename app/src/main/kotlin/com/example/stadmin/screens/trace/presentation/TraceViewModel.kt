@@ -15,6 +15,12 @@ import com.example.stadmin.screens.trace.domain.usecase.DeleteTraceUseCase
 import com.example.stadmin.screens.trace.domain.usecase.EditTraceUseCase
 import com.example.stadmin.screens.trace.domain.usecase.GetTracesUseCase
 import com.example.stadmin.screens.trace.domain.usecase.UploadImageUseCase
+import com.example.stadmin.translation.domain.model.TraceTranslation
+import com.example.stadmin.translation.domain.usecase.CreateTranslationUseCase
+import com.example.stadmin.translation.domain.usecase.DeleteTranslationUseCase
+import com.example.stadmin.translation.domain.usecase.EditTranslationUseCase
+import com.example.stadmin.translation.domain.usecase.GetTranslationsUseCase
+import com.example.stadmin.translation.presentation.TranslationLanguage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +35,10 @@ class TraceViewModel(
     private val deleteTraceUseCase: DeleteTraceUseCase,
     private val uploadImageUseCase: UploadImageUseCase,
     private val deleteImageUseCase: DeleteImageUseCase,
+    private val getTranslationsUseCase: GetTranslationsUseCase,
+    private val createTranslationUseCase: CreateTranslationUseCase,
+    private val editTranslationUseCase: EditTranslationUseCase,
+    private val deleteTranslationUseCase: DeleteTranslationUseCase,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(TraceViewState())
@@ -44,7 +54,11 @@ class TraceViewModel(
             getTracesUseCase.invoke().collectLatest { result ->
                 result.fold(
                     onSuccess = { traces ->
-                        _viewState.update { it.copy(isLoading = false, traces = traces) }
+                        _viewState.update {
+                            it.copy(
+                                isLoading = false,
+                                traces = traces.sortedByDescending { trace -> trace.updatedAt })
+                        }
                     },
                     onFailure = { error ->
                         _viewState.update {
@@ -110,7 +124,7 @@ class TraceViewModel(
                         _viewState.update {
                             it.copy(
                                 isSaving = false,
-                                saveSuccess = false,
+                                translationSaveSuccess = false,
                                 snackBarMessage = error.message
                             )
                         }
@@ -262,26 +276,151 @@ class TraceViewModel(
     fun onPublishedChanged(value: Boolean) = _viewState.update { it.copy(published = value) }
 
     fun onTraceSelected(trace: Trace) {
-        _viewState.update {
-            it.copy(
-                selectedTrace = trace,
-                title = trace.title,
-                slug = trace.slug,
-                description = trace.description ?: "",
-                year = trace.year?.toString() ?: "",
-                era = trace.era,
-                imageUrl = trace.imageUrl ?: "",
-                heroImageUrl = trace.heroImageUrl ?: "",
-                latitude = trace.latitude?.toString() ?: "",
-                longitude = trace.longitude?.toString() ?: "",
-                published = trace.published,
-                content = trace.content ?: emptyList(),
-                passages = trace.passages ?: emptyList(),
-                videos = trace.videos ?: emptyList(),
-                sources = trace.sources ?: emptyList(),
+        viewModelScope.launch {
+            _viewState.update {
+                it.copy(
+                    selectedTrace = trace,
+                    title = trace.title,
+                    slug = trace.slug,
+                    description = trace.description ?: "",
+                    year = trace.year?.toString() ?: "",
+                    era = trace.era,
+                    imageUrl = trace.imageUrl ?: "",
+                    heroImageUrl = trace.heroImageUrl ?: "",
+                    latitude = trace.latitude?.toString() ?: "",
+                    longitude = trace.longitude?.toString() ?: "",
+                    published = trace.published,
+                    content = trace.content ?: emptyList(),
+                    passages = trace.passages ?: emptyList(),
+                    videos = trace.videos ?: emptyList(),
+                    sources = trace.sources ?: emptyList(),
+                )
+            }
+            getTranslation(slug = trace.slug)
+        }
+    }
+
+    private suspend fun getTranslation(slug: String) {
+        getTranslationsUseCase.invoke(slug).collectLatest { result ->
+            result.fold(
+                onSuccess = { translations ->
+                    _viewState.update { it.copy(translations = translations) }
+                },
+                onFailure = { error ->
+                    _viewState.update { it.copy(snackBarMessage = error.message) }
+                }
             )
         }
     }
+
+    fun saveTranslation(traceSlug: String) {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true, snackBarMessage = null) }
+            val state = _viewState.value
+            val isNew = state.selectedTranslation == null
+
+            val translation = TraceTranslation(
+                id = state.selectedTranslation?.id,
+                traceSlug = traceSlug,
+                language = state.language,
+                title = state.titleTranslated.ifBlank { null },
+                description = state.descriptionTranslated.ifBlank { null },
+                content = state.contentTranslated.filter { it.isNotBlank() }.ifEmpty { null },
+                passages = state.passagesTranslated.ifEmpty { null },
+                videos = state.videosTranslated.filter { it.isNotBlank() }.ifEmpty { null },
+            )
+
+            val flow = if (isNew) {
+                createTranslationUseCase(translation)
+            } else {
+                editTranslationUseCase(translation)
+            }
+
+            flow.collectLatest { result ->
+                result.fold(
+                    onSuccess = {
+                        _viewState.update {
+                            it.copy(
+                                isLoading = false,
+                                translationSaveSuccess = true,
+                                snackBarMessage = if (isNew) "Translation saved!" else "Translation updated!"
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        _viewState.update {
+                            it.copy(isLoading = false, snackBarMessage = error.message)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun deleteTranslation(id: String, traceSlug: String) {
+        viewModelScope.launch {
+            _viewState.update { it.copy(isLoading = true, snackBarMessage = null) }
+            deleteTranslationUseCase(id).collectLatest { result ->
+                result.fold(
+                    onSuccess = {
+                        _viewState.update { it.copy(isLoading = false, deleteSuccess = true) }
+                        getTranslation(slug = traceSlug)
+                    },
+                    onFailure = { error ->
+                        _viewState.update {
+                            it.copy(isLoading = false, snackBarMessage = error.message)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun onTranslationSelected(translation: TraceTranslation) {
+        _viewState.update {
+            it.copy(
+                selectedTranslation = translation,
+                language = translation.language,
+                titleTranslated = translation.title ?: "",
+                descriptionTranslated = translation.description ?: "",
+                contentTranslated = translation.content ?: emptyList(),
+                passagesTranslated = translation.passages ?: emptyList(),
+                videosTranslated = translation.videos ?: emptyList(),
+            )
+        }
+    }
+
+    fun onNewTranslation(language: TranslationLanguage = TranslationLanguage.ES) {
+        _viewState.update {
+            it.copy(
+                selectedTranslation = null,
+                language = language,
+                titleTranslated = "",
+                descriptionTranslated = "",
+                contentTranslated = emptyList(),
+                passagesTranslated = emptyList(),
+                videosTranslated = emptyList(),
+            )
+        }
+    }
+
+    fun onLanguageChanged(value: TranslationLanguage) =
+        _viewState.update { it.copy(language = value) }
+
+    fun onTitleTranslatedChanged(value: String) =
+        _viewState.update { it.copy(titleTranslated = value) }
+
+    fun onDescriptionTranslatedChanged(value: String) =
+        _viewState.update { it.copy(descriptionTranslated = value) }
+
+    fun onContentTranslatedChanged(content: List<String>) =
+        _viewState.update { it.copy(contentTranslated = content) }
+
+    fun onPassagesTranslatedChanged(passages: List<Passage>) =
+        _viewState.update { it.copy(passagesTranslated = passages) }
+
+    fun onVideosTranslatedChanged(videos: List<String>) =
+        _viewState.update { it.copy(videosTranslated = videos) }
 
     fun onCreateNewTrace() {
         _viewState.update {
@@ -320,6 +459,18 @@ class TraceViewModel(
         _viewState.update { it.copy(saveSuccess = false) }
     }
 
+    fun onTranslationSaveSuccessConsumed() {
+        _viewState.update { it.copy(translationSaveSuccess = false) }
+    }
+
+    fun onShowTranslationSheet() {
+        _viewState.update { it.copy(showTranslationSheet = true) }
+    }
+
+    fun onHideTranslationSheet() {
+        _viewState.update { it.copy(showTranslationSheet = false) }
+    }
+
     fun onFirstTimeCreatedConsumed() {
         _viewState.update { it.copy(isFirstTimeCreated = false) }
     }
@@ -327,37 +478,69 @@ class TraceViewModel(
     fun onSnackBarMessageConsumed() {
         _viewState.update { it.copy(snackBarMessage = null) }
     }
-
-    data class TraceViewState(
-        val traces: List<Trace> = emptyList(),
-        val isLoading: Boolean = false,
-        val snackBarMessage: String? = null,
-        val isDeleting: Boolean = false,
-        val selectedTrace: Trace? = null,
-        val isSaving: Boolean = false,
-        val isFirstTimeCreated: Boolean = false,
-        val saveSuccess: Boolean = false,
-        val deleteSuccess: Boolean = false,
-        val isUploadingImage: Boolean = false,
-        val pendingImageUrls: List<String> = emptyList(),
-
-        // Form fields
-        val title: String = "",
-        val slug: String = "",
-        val description: String = "",
-        val year: String = "",
-        val era: TraceEra = TraceEra.UNKNOWN,
-        val imageUrl: String = "",
-        val heroImageUrl: String = "",
-        val latitude: String = "",
-        val longitude: String = "",
-        val published: Boolean = false,
-        val content: List<String> = emptyList(),
-        val passages: List<Passage> = emptyList(),
-        val videos: List<Video> = emptyList(),
-        val sources: List<Source> = emptyList(),
-    )
 }
+
+data class TraceViewState(
+    val traces: List<Trace> = emptyList(),
+    val isLoading: Boolean = false,
+    val snackBarMessage: String? = null,
+    val isDeleting: Boolean = false,
+    val selectedTrace: Trace? = null,
+    val selectedTranslation: TraceTranslation? = null,
+    val isSaving: Boolean = false,
+    val isFirstTimeCreated: Boolean = false,
+    val saveSuccess: Boolean = false,
+    val translationSaveSuccess: Boolean = false,
+    val deleteSuccess: Boolean = false,
+    val isUploadingImage: Boolean = false,
+    val pendingImageUrls: List<String> = emptyList(),
+    val showTranslationSheet: Boolean = false,
+
+    // Form fields
+    val title: String = "",
+    val slug: String = "",
+    val description: String = "",
+    val year: String = "",
+    val era: TraceEra = TraceEra.UNKNOWN,
+    val imageUrl: String = "",
+    val heroImageUrl: String = "",
+    val latitude: String = "",
+    val longitude: String = "",
+    val published: Boolean = false,
+    val content: List<String> = emptyList(),
+    val passages: List<Passage> = emptyList(),
+    val videos: List<Video> = emptyList(),
+    val sources: List<Source> = emptyList(),
+    val translations: List<TraceTranslation> = emptyList(),
+
+    //Translations
+    val language: TranslationLanguage = TranslationLanguage.ES,
+    val titleTranslated: String = "",
+    val descriptionTranslated: String = "",
+    val contentTranslated: List<String> = emptyList(),
+    val passagesTranslated: List<Passage> = emptyList(),
+    val videosTranslated: List<String> = emptyList(),
+)
+
+fun TraceViewState.toTrace(): Trace = Trace(
+    id = selectedTrace?.id,
+    slug = slug,
+    title = title,
+    description = description.ifBlank { null },
+    year = year.toIntOrNull(),
+    era = era,
+    imageUrl = imageUrl.ifBlank { null },
+    heroImageUrl = heroImageUrl.ifBlank { null },
+    latitude = latitude.toDoubleOrNull(),
+    longitude = longitude.toDoubleOrNull(),
+    content = content.filter { it.isNotBlank() },
+    passages = passages,
+    videos = videos,
+    sources = sources,
+    published = published,
+    createdAt = selectedTrace?.createdAt,
+    updatedAt = selectedTrace?.updatedAt
+)
 
 enum class ImageType {
     CARD,

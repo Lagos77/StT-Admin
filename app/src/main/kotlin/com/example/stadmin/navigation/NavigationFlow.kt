@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.stadmin.screens.dashboard.presentation.DashboardScreen
 import com.example.stadmin.screens.login.presentation.screens.LoginScreen
 import com.example.stadmin.screens.trace.presentation.screens.TraceDetailScreen
-import com.example.stadmin.screens.trace.presentation.screens.TraceListScreen
+import com.example.stadmin.screens.tracelist.presentation.screens.TraceListScreen
 
 @Composable
 fun NavigationFlow() {
@@ -41,7 +41,6 @@ fun NavigationFlow() {
                 )
             },
         )
-
         NavigationScreen.HOME_DETAIL -> {}
         NavigationScreen.ABOUT_DETAIL -> {}
     }

@@ -32,7 +32,6 @@ data class Trace(
                 !heroImageUrl.isNullOrBlank() &&
                 latitude != null &&
                 longitude != null &&
-                year != null &&
                 !content.isNullOrEmpty() &&
                 !passages.isNullOrEmpty() &&
                 !videos.isNullOrEmpty() &&

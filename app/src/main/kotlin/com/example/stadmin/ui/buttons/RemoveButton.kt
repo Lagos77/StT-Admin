@@ -1,4 +1,4 @@
-package com.example.stadmin.ui.common
+package com.example.stadmin.ui.buttons
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

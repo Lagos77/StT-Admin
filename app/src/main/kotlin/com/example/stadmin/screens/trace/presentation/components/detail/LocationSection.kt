@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.PasteButton
+import com.example.stadmin.ui.buttons.PasteButton
+import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 import java.util.Locale
 
@@ -46,14 +46,14 @@ fun LocationSection(
             )
         }) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            TraceTextField(
+            CustomTextField(
                 label = "Latitude",
                 value = latitude,
                 onValueChange = onLatitudeChanged,
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f)
             )
-            TraceTextField(
+            CustomTextField(
                 label = "Longitude",
                 value = longitude,
                 onValueChange = onLongitudeChanged,

@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
-import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.buttons.RemoveButton
+import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -22,7 +22,7 @@ fun ContentSection(
     ) {
         content.forEachIndexed { index, paragraph ->
             Column(modifier = Modifier) {
-                TraceTextField(
+                CustomTextField(
                     label = "Text",
                     value = paragraph,
                     onValueChange = { newValue ->

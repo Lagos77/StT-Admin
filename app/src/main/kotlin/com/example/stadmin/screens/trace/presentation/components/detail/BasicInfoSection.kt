@@ -31,11 +31,11 @@ import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.presentation.ImageType
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerSection
 import com.example.stadmin.screens.trace.presentation.components.detail.image.ImagePickerType
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.common.CustomTextField
 
 @Composable
 fun BasicInfoSection(
@@ -54,15 +54,15 @@ fun BasicInfoSection(
     onImageDeleted: (ImageType) -> Unit,
 ) {
     SectionCard(title = "Basic Info") {
-        TraceTextField(label = "Title", value = title, onValueChange = onTitleChanged)
-        TraceTextField(
+        CustomTextField(label = "Title", value = title, onValueChange = onTitleChanged)
+        CustomTextField(
             label = "URL Path",
             value = slug,
             onValueChange = onSlugChanged,
             enabled = false
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            TraceTextField(
+            CustomTextField(
                 label = "Year",
                 value = year,
                 onValueChange = onYearChanged,

@@ -10,11 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.stadmin.screens.trace.domain.model.Source
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.PasteButton
-import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.buttons.PasteButton
+import com.example.stadmin.ui.buttons.RemoveButton
+import com.example.stadmin.ui.common.CustomTextField
 
 @Composable
 fun SourcesSection(
@@ -39,7 +39,7 @@ fun SourcesSection(
                         .padding(Spacing.small),
                     verticalArrangement = Arrangement.spacedBy(Spacing.small)
                 ) {
-                    TraceTextField(
+                    CustomTextField(
                         label = "Label",
                         value = source.label,
                         onValueChange = {
@@ -48,7 +48,7 @@ fun SourcesSection(
                                     .also { list -> list[index] = source.copy(label = it) })
                         }
                     )
-                    TraceTextField(
+                    CustomTextField(
                         label = "URL",
                         labelTrailingContent = {
                             PasteButton(

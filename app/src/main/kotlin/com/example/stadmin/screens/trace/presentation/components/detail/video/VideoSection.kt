@@ -15,11 +15,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.stadmin.screens.trace.domain.model.Video
 import com.example.stadmin.screens.trace.presentation.components.detail.CollapsibleSection
-import com.example.stadmin.screens.trace.presentation.screens.TraceTextField
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.PasteButton
-import com.example.stadmin.ui.common.RemoveButton
+import com.example.stadmin.ui.buttons.PasteButton
+import com.example.stadmin.ui.buttons.RemoveButton
+import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.common.SelectionBottomSheet
 import com.example.stadmin.ui.common.SelectorField
 import com.example.stadmin.ui.extractYoutubeVideoId
@@ -67,7 +67,7 @@ fun VideosSection(
                         .padding(Spacing.small),
                     verticalArrangement = Arrangement.spacedBy(Spacing.small)
                 ) {
-                    TraceTextField(
+                    CustomTextField(
                         label = "Label",
                         value = video.label,
                         onValueChange = {
@@ -76,7 +76,7 @@ fun VideosSection(
                                     .also { list -> list[index] = video.copy(label = it) })
                         }
                     )
-                    TraceTextField(
+                    CustomTextField(
                         label = "Video ID",
                         labelTrailingContent = {
                             PasteButton(
