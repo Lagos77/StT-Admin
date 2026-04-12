@@ -23,9 +23,25 @@ data class TraceTranslationDto(
     @SerialName("content")
     val content: JsonArray? = null,
     @SerialName("passages")
-    val passages: JsonArray? = null,
+    val passages: List<TranslationPassageDto>? = null,
     @SerialName("videos")
     val videos: List<String>? = null,
+)
+
+@Serializable
+data class TranslationPassageDto(
+    @SerialName("book")
+    val book: String? = null,
+    @SerialName("chapter")
+    val chapter: Int? = null,
+    @SerialName("verse_start")
+    val verseStart: Int? = null,
+    @SerialName("verse_end")
+    val verseEnd: Int? = null,
+    @SerialName("text")
+    val text: String? = null,
+    @SerialName("version")
+    val version: String? = null
 )
 
 fun TraceTranslation.toDto() = TraceTranslationDto(
@@ -35,6 +51,15 @@ fun TraceTranslation.toDto() = TraceTranslationDto(
     title = title,
     description = description,
     content = content?.let { Json.encodeToJsonElement(it).jsonArray },
-    passages = passages?.let { Json.encodeToJsonElement(it).jsonArray },
+    passages = passages?.map { passage ->
+        TranslationPassageDto(
+            book = passage.book,
+            chapter = passage.chapter,
+            verseStart = passage.verseStart,
+            verseEnd = passage.verseEnd,
+            text = passage.text,
+            version = passage.version
+        )
+    },
     videos = videos,
 )

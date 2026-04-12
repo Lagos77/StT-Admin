@@ -28,6 +28,7 @@ fun CustomTextField(
     minLines: Int = 1,
     enabled: Boolean = true,
     maxLength: Int = Int.MAX_VALUE,
+    isWarning: Boolean = false,
     labelTrailingContent: (@Composable () -> Unit)? = null
 ) {
     Column(modifier = modifier) {
@@ -54,8 +55,8 @@ fun CustomTextField(
             minLines = minLines,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = if (isWarning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                focusedBorderColor = if (isWarning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                 disabledBorderColor = MaterialTheme.colorScheme.outline,
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,

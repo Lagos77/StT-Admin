@@ -3,8 +3,6 @@ package com.example.stadmin.translation.domain.model
 import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.translation.data.model.TraceTranslationDto
 import com.example.stadmin.translation.presentation.TranslationLanguage
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonPrimitive
 
 data class TraceTranslation(
@@ -26,7 +24,16 @@ fun TraceTranslationDto.toDomain(): TraceTranslation? {
         title = title,
         description = description,
         content = content?.map { it.jsonPrimitive.content },
-        passages = passages?.let { Json.decodeFromJsonElement(it) },
+        passages = passages?.map { dto ->
+            Passage(
+                book = dto.book ?: "",
+                chapter = dto.chapter,
+                verseStart = dto.verseStart,
+                verseEnd = dto.verseEnd,
+                text = dto.text ?: "",
+                version = dto.version ?: ""
+            )
+        },
         videos = videos,
     )
 }

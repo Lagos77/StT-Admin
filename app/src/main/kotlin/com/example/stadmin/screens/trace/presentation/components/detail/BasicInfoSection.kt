@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.stadmin.screens.trace.domain.TraceEra
 import com.example.stadmin.screens.trace.presentation.ImageType
@@ -36,6 +37,7 @@ import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
 fun BasicInfoSection(
@@ -155,5 +157,27 @@ private fun EraDropdown(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Example() {
+    STAdminTheme {
+        BasicInfoSection(
+            title = "",
+            slug = "",
+            year = "",
+            era = TraceEra.OT,
+            imageUrl = "",
+            heroImageUrl = "",
+            isUploadingImage = false,
+            onTitleChanged = {},
+            onSlugChanged = {},
+            onYearChanged = {},
+            onEraChanged = {},
+            onImageSelected = { _, _ -> },
+            onImageDeleted = {},
+        )
     }
 }

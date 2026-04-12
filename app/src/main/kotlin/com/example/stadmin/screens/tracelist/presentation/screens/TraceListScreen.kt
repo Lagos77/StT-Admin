@@ -59,7 +59,6 @@ fun TraceListScreen(
 
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
-            viewModel.getTraceList()
             viewModel.onSaveSuccessConsumed()
         }
     }
@@ -78,6 +77,9 @@ fun TraceListScreen(
                 onAdd = {
                     viewModel.onCreateNewTrace()
                     onNavigateToDetail()
+                },
+                onRefresh = {
+                    viewModel.getTraceList()
                 }
             )
         }

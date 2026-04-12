@@ -21,6 +21,7 @@ import com.example.stadmin.translation.domain.usecase.DeleteTranslationUseCase
 import com.example.stadmin.translation.domain.usecase.EditTranslationUseCase
 import com.example.stadmin.translation.domain.usecase.GetTranslationsUseCase
 import com.example.stadmin.translation.presentation.TranslationLanguage
+import com.example.stadmin.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -276,40 +277,51 @@ class TraceViewModel(
     fun onPublishedChanged(value: Boolean) = _viewState.update { it.copy(published = value) }
 
     fun onTraceSelected(trace: Trace) {
-        viewModelScope.launch {
-            _viewState.update {
-                it.copy(
-                    selectedTrace = trace,
-                    title = trace.title,
-                    slug = trace.slug,
-                    description = trace.description ?: "",
-                    year = trace.year?.toString() ?: "",
-                    era = trace.era,
-                    imageUrl = trace.imageUrl ?: "",
-                    heroImageUrl = trace.heroImageUrl ?: "",
-                    latitude = trace.latitude?.toString() ?: "",
-                    longitude = trace.longitude?.toString() ?: "",
-                    published = trace.published,
-                    content = trace.content ?: emptyList(),
-                    passages = trace.passages ?: emptyList(),
-                    videos = trace.videos ?: emptyList(),
-                    sources = trace.sources ?: emptyList(),
-                )
-            }
-            getTranslation(slug = trace.slug)
+        _viewState.update {
+            it.copy(
+                selectedTrace = trace,
+                title = trace.title,
+                slug = trace.slug,
+                description = trace.description ?: "",
+                year = trace.year?.toString() ?: "",
+                era = trace.era,
+                imageUrl = trace.imageUrl ?: "",
+                heroImageUrl = trace.heroImageUrl ?: "",
+                latitude = trace.latitude?.toString() ?: "",
+                longitude = trace.longitude?.toString() ?: "",
+                published = trace.published,
+                content = trace.content ?: emptyList(),
+                passages = trace.passages ?: emptyList(),
+                videos = trace.videos ?: emptyList(),
+                sources = trace.sources ?: emptyList(),
+            )
         }
+        getTranslation(slug = trace.slug)
     }
 
-    private suspend fun getTranslation(slug: String) {
-        getTranslationsUseCase.invoke(slug).collectLatest { result ->
-            result.fold(
-                onSuccess = { translations ->
-                    _viewState.update { it.copy(translations = translations) }
-                },
-                onFailure = { error ->
-                    _viewState.update { it.copy(snackBarMessage = error.message) }
-                }
-            )
+    fun getTranslation(slug: String) {
+        _viewState.update { it.copy(isLoadingTranslations = true) }
+        viewModelScope.launch {
+            getTranslationsUseCase.invoke(slug).collectLatest { result ->
+                result.fold(
+                    onSuccess = { translations ->
+                        _viewState.update {
+                            it.copy(
+                                translations = translations,
+                                isLoadingTranslations = false
+                            )
+                        }
+                    },
+                    onFailure = { error ->
+                        _viewState.update {
+                            it.copy(
+                                snackBarMessage = error.message,
+                                isLoadingTranslations = false
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -326,7 +338,9 @@ class TraceViewModel(
                 title = state.titleTranslated.ifBlank { null },
                 description = state.descriptionTranslated.ifBlank { null },
                 content = state.contentTranslated.filter { it.isNotBlank() }.ifEmpty { null },
-                passages = state.passagesTranslated.ifEmpty { null },
+                passages = state.passagesTranslated.ifEmpty { null }?.map {
+                    it.copy(version = getBibleVersion(state.language))
+                },
                 videos = state.videosTranslated.filter { it.isNotBlank() }.ifEmpty { null },
             )
 
@@ -354,6 +368,14 @@ class TraceViewModel(
                     }
                 )
             }
+        }
+    }
+
+    private fun getBibleVersion(language: TranslationLanguage): String {
+        return when (language) {
+            TranslationLanguage.PT -> Constants.Versions.NOVA_VERSAO_INTERNACIONAL
+            TranslationLanguage.ES -> Constants.Versions.REINA_VALERA_1960
+            TranslationLanguage.SV -> Constants.Versions.SVENSKA_FOLKBIBELN_1998
         }
     }
 
@@ -483,6 +505,7 @@ class TraceViewModel(
 data class TraceViewState(
     val traces: List<Trace> = emptyList(),
     val isLoading: Boolean = false,
+    val isLoadingTranslations: Boolean = false,
     val snackBarMessage: String? = null,
     val isDeleting: Boolean = false,
     val selectedTrace: Trace? = null,

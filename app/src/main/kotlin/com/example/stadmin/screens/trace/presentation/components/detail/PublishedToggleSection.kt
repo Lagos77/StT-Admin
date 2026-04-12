@@ -37,7 +37,7 @@ fun PublishedToggleSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(Spacing.medium),
+                .padding(horizontal = Spacing.medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -47,11 +47,6 @@ fun PublishedToggleSection(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Visible on the website",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
                 )
             }
             Switch(

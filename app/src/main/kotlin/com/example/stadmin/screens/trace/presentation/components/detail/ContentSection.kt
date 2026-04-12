@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
 import com.example.stadmin.ui.buttons.RemoveButton
 import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
@@ -17,7 +18,7 @@ fun ContentSection(
         title = "Content",
         count = content.size,
         onAdd = {
-                onContentChanged(content + "")
+            onContentChanged(content + "")
         }
     ) {
         content.forEachIndexed { index, paragraph ->
@@ -28,7 +29,19 @@ fun ContentSection(
                     onValueChange = { newValue ->
                         onContentChanged(content.toMutableList().also { it[index] = newValue })
                     },
-                    minLines = 2
+                    minLines = 2,
+                    labelTrailingContent = {
+                        PasteAndClearButtonsRow(
+                            onPaste = { pasted ->
+                                onContentChanged(
+                                    content.toMutableList().also { it[index] = pasted })
+                            },
+                            clearValue = paragraph,
+                            onClear = {
+                                onContentChanged(content.toMutableList().also { it[index] = "" })
+                            }
+                        )
+                    }
                 )
                 RemoveButton(onClick = {
                     onContentChanged(content.toMutableList().also { it.removeAt(index) })

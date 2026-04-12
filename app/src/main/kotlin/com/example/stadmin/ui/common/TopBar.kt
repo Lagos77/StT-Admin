@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,9 +33,11 @@ import com.example.stadmin.ui.Spacing
 fun TopBar(
     type: TopBarType,
     title: String,
+    isEditMode: Boolean = false,
     isSaving: Boolean = false,
     onBack: () -> Unit,
-    onAdd: () -> Unit
+    onAdd: () -> Unit,
+    onRefresh: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -67,12 +71,22 @@ fun TopBar(
         Text(
             text = title,
             style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         when (type) {
-            TopBarType.LIST -> AddButton(onClick = onAdd)
-            TopBarType.SAVE -> SaveButton(onClick = onAdd, isSaving = isSaving)
+            TopBarType.LIST -> {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.extraLarge)) {
+                    RefreshButton(onClick = onRefresh)
+                    AddButton(onClick = onAdd)
+                }
+            }
+            TopBarType.SAVE ->{
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.large)) {
+                    RefreshTranslationButton(onClick = onRefresh, isEnabled = isEditMode)
+                    SaveButton(onClick = onAdd, isSaving = isSaving)
+                }
+            }
         }
     }
 }
@@ -98,6 +112,45 @@ private fun AddButton(onClick: () -> Unit) {
 }
 
 @Composable
+private fun RefreshButton(onClick: () -> Unit) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(Sizing.thumbnailSmall)
+            .background(
+                color = MaterialTheme.colorScheme.primary,
+                shape = Shapes.small
+            )
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Refresh,
+            contentDescription = "Refresh list",
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(Sizing.iconMedium)
+        )
+    }
+}
+
+@Composable
+private fun RefreshTranslationButton(onClick: () -> Unit, isEnabled: Boolean) {
+    Button(
+        onClick = onClick,
+        shape = Shapes.pill,
+        enabled = isEnabled,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Refresh,
+            contentDescription = "Refresh translation list",
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(Sizing.iconMedium)
+        )
+    }
+}
+
+@Composable
 private fun SaveButton(onClick: () -> Unit, isSaving: Boolean) {
     Button(
         onClick = onClick,
@@ -109,15 +162,24 @@ private fun SaveButton(onClick: () -> Unit, isSaving: Boolean) {
     ) {
         if (isSaving) {
             CircularProgressIndicator(
-                modifier = Modifier.size(Sizing.iconSmall),
+                modifier = Modifier.size(Sizing.iconMedium),
                 color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = Spacing.extraSmall
             )
         } else {
+            Icon(
+                imageVector = Icons.Filled.Save,
+                contentDescription = "Save",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(Sizing.iconMedium)
+            )
+            /*
             Text(
                 text = "Save",
                 style = MaterialTheme.typography.labelLarge
             )
+
+             */
         }
     }
 }

@@ -80,6 +80,6 @@ object Constants {
         const val NEW_INTERNATIONAL_VERSION = "NIV"
         const val REINA_VALERA_1960 = "RVR60"
         const val NOVA_VERSAO_INTERNACIONAL = "NVI"
-        const val SVENSKA_FOLKBIBELN_2015 = "SFB15"
+        const val SVENSKA_FOLKBIBELN_1998 = "SFB98"
     }
 }

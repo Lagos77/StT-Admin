@@ -80,9 +80,11 @@ fun TraceDetailScreen(
                 } else {
                     stringResource(R.string.trace_details_new_title)
                 },
+                isEditMode = isEditMode,
                 isSaving = viewState.isSaving,
                 onBack = { viewModel.onDiscardChanges(onBack) },
-                onAdd = { viewModel.saveTrace(trace = viewState.toTrace()) }
+                onAdd = { viewModel.saveTrace(trace = viewState.toTrace()) },
+                onRefresh = { viewModel.getTranslation(viewState.selectedTrace?.slug ?: "") }
             )
         }
     ) { paddingValues ->
@@ -163,6 +165,7 @@ fun TraceDetailScreen(
                 item {
                     OutlinedButton(
                         onClick = viewModel::onShowTranslationSheet,
+                        enabled = !viewState.isLoadingTranslations,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Default.Language, contentDescription = null)

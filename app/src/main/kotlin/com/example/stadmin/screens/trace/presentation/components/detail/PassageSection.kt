@@ -20,6 +20,7 @@ import com.example.stadmin.screens.trace.domain.model.Passage
 import com.example.stadmin.translation.presentation.TranslationLanguage
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
+import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
 import com.example.stadmin.ui.buttons.RemoveButton
 import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.common.SelectionBottomSheet
@@ -35,7 +36,18 @@ fun PassagesSection(
     CollapsibleSection(
         title = "Passages",
         count = passages.size,
-        onAdd = { onPassagesChanged(passages + Passage("", null, null, null, "", Constants.Versions.NEW_INTERNATIONAL_VERSION)) }
+        onAdd = {
+            onPassagesChanged(
+                passages + Passage(
+                    "",
+                    null,
+                    null,
+                    null,
+                    "",
+                    Constants.Versions.NEW_INTERNATIONAL_VERSION
+                )
+            )
+        }
     ) {
         passages.forEachIndexed { index, passage ->
             Card(
@@ -115,7 +127,24 @@ fun PassagesSection(
                                 passages.toMutableList()
                                     .also { list -> list[index] = passage.copy(text = it) })
                         },
-                        minLines = 3
+                        minLines = 3,
+                        labelTrailingContent = {
+                            PasteAndClearButtonsRow(
+                                onPaste = { pasted ->
+                                    onPassagesChanged(
+                                        passages.toMutableList()
+                                            .also { list ->
+                                                list[index] = passage.copy(text = pasted)
+                                            })
+                                },
+                                clearValue = passage.text,
+                                onClear = {
+                                    onPassagesChanged(
+                                        passages.toMutableList()
+                                            .also { list -> list[index] = passage.copy(text = "") })
+                                }
+                            )
+                        }
                     )
                     RemoveButton(onClick = {
                         onPassagesChanged(

@@ -54,8 +54,7 @@ import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.buttons.ClearButton
-import com.example.stadmin.ui.buttons.PasteButton
+import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
 import com.example.stadmin.ui.common.CustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 import com.example.stadmin.util.Constants
@@ -102,7 +101,6 @@ fun TranslationBottomSheet(
     LaunchedEffect(viewState.translationSaveSuccess) {
         if (viewState.translationSaveSuccess) {
             onSaveSuccessConsumed()
-            onDismiss()
         }
     }
 
@@ -263,7 +261,8 @@ fun TranslationBottomSheet(
                             minLines = 2,
                             labelTrailingContent = {
                                 PasteAndClearButtonsRow(
-                                    onPaste = { onContentChanged(viewState.contentTranslated.updateAt(index, "") { it }) },
+                                    onPaste = { pasted ->
+                                        onContentChanged(viewState.contentTranslated.updateAt(index, "") { pasted }) },
                                     clearValue = translatedValue,
                                     onClear = { onContentChanged(viewState.contentTranslated.updateAt(index, "") { "" }) }
                                 )
@@ -372,7 +371,8 @@ fun TranslationBottomSheet(
                             },
                             labelTrailingContent = {
                                 PasteAndClearButtonsRow(
-                                    onPaste = { onVideosChanged(viewState.videosTranslated.updateAt(index, "") { it }) },
+                                    onPaste = { pasted ->
+                                        onVideosChanged(viewState.videosTranslated.updateAt(index, "") { pasted }) },
                                     clearValue = translatedLabel,
                                     onClear = { onVideosChanged(viewState.videosTranslated.updateAt(index, "") { "" }) }
                                 )
@@ -400,7 +400,7 @@ private fun getBibleVersion(language: TranslationLanguage): String {
     return when (language) {
         TranslationLanguage.ES -> Constants.Versions.REINA_VALERA_1960
         TranslationLanguage.PT -> Constants.Versions.NOVA_VERSAO_INTERNACIONAL
-        TranslationLanguage.SV -> Constants.Versions.SVENSKA_FOLKBIBELN_2015
+        TranslationLanguage.SV -> Constants.Versions.SVENSKA_FOLKBIBELN_1998
     }
 }
 
@@ -459,24 +459,6 @@ private fun TranslationSummaryCard(
                     MaterialTheme.colorScheme.onSurface
             )
         }
-    }
-}
-
-@Composable
-private fun PasteAndClearButtonsRow(
-    onPaste: (String) -> Unit,
-    clearValue: String,
-    onClear: () -> Unit,
-) {
-    Row {
-        PasteButton(onPaste = onPaste)
-        if (!clearValue.isBlank()) {
-            Spacer(modifier = Modifier.padding(horizontal = Spacing.small))
-        }
-        ClearButton(
-            value = clearValue,
-            onClear = onClear,
-        )
     }
 }
 
