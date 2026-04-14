@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="trace_details_new_title">New Trace</string>
-    <string name="trace_details_edit_title">Edit Trace</string>
 </resources>

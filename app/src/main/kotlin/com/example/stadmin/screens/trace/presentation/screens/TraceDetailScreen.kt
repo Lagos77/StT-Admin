@@ -1,7 +1,6 @@
 package com.example.stadmin.screens.trace.presentation.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,13 +74,10 @@ fun TraceDetailScreen(
         topBar = {
             TopBar(
                 type = TopBarType.SAVE,
-                title = if (isEditMode) {
-                    stringResource(R.string.trace_details_edit_title)
-                } else {
-                    stringResource(R.string.trace_details_new_title)
-                },
+                title = if (!isEditMode) stringResource(R.string.trace_details_new_title) else "",
                 isEditMode = isEditMode,
                 isSaving = viewState.isSaving,
+                isLoadingTranslation = !viewState.isLoadingTranslations,
                 onBack = { viewModel.onDiscardChanges(onBack) },
                 onAdd = { viewModel.saveTrace(trace = viewState.toTrace()) },
                 onRefresh = { viewModel.getTranslation(viewState.selectedTrace?.slug ?: "") }
@@ -94,8 +90,17 @@ fun TraceDetailScreen(
                 .padding(paddingValues)
                 .padding(horizontal = Spacing.medium),
             verticalArrangement = Arrangement.spacedBy(Spacing.small),
-            contentPadding = PaddingValues(vertical = Spacing.medium)
         ) {
+            if (isEditMode) {
+                item {
+                    Text(
+                        text = viewState.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+            }
+
             item {
                 PublishedToggleSection(
                     published = viewState.published,

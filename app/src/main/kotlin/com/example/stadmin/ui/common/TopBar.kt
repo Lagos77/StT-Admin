@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.example.stadmin.R
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
@@ -35,6 +37,7 @@ fun TopBar(
     title: String,
     isEditMode: Boolean = false,
     isSaving: Boolean = false,
+    isLoadingTranslation: Boolean = false,
     onBack: () -> Unit,
     onAdd: () -> Unit,
     onRefresh: () -> Unit = {},
@@ -81,9 +84,15 @@ fun TopBar(
                     AddButton(onClick = onAdd)
                 }
             }
-            TopBarType.SAVE ->{
+
+            TopBarType.SAVE -> {
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.large)) {
-                    RefreshTranslationButton(onClick = onRefresh, isEnabled = isEditMode)
+                    if (isEditMode) {
+                        RefreshTranslationButton(
+                            onClick = onRefresh,
+                            isLoading = isLoadingTranslation
+                        )
+                    }
                     SaveButton(onClick = onAdd, isSaving = isSaving)
                 }
             }
@@ -132,17 +141,17 @@ private fun RefreshButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun RefreshTranslationButton(onClick: () -> Unit, isEnabled: Boolean) {
+private fun RefreshTranslationButton(onClick: () -> Unit, isLoading: Boolean) {
     Button(
         onClick = onClick,
         shape = Shapes.pill,
-        enabled = isEnabled,
+        enabled = isLoading,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
         Icon(
-            imageVector = Icons.Filled.Refresh,
+            painter = painterResource(R.drawable.refresh_language),
             contentDescription = "Refresh translation list",
             tint = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.size(Sizing.iconMedium)
