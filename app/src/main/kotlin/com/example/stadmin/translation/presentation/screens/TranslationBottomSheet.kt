@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.screens.trace.domain.TraceEra
@@ -314,6 +315,34 @@ fun TranslationBottomSheet(
                                         value = getBibleVersion(viewState.language),
                                         enabled = false,
                                         onValueChange = {},
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
+                                    CustomTextField(
+                                        label = "Verse Start",
+                                        value = translatedPassage.verseStart?.toString() ?: "",
+                                        onValueChange = { value ->
+                                            onPassagesChanged(
+                                                viewState.passagesTranslated.updateAt(index, emptyPassage) {
+                                                    it.copy(verseStart = value.toIntOrNull())
+                                                }
+                                            )
+                                        },
+                                        keyboardType = KeyboardType.Number,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    CustomTextField(
+                                        label = "Verse End",
+                                        value = translatedPassage.verseEnd?.toString() ?: "",
+                                        onValueChange = { value ->
+                                            onPassagesChanged(
+                                                viewState.passagesTranslated.updateAt(index, emptyPassage) {
+                                                    it.copy(verseEnd = value.toIntOrNull())
+                                                }
+                                            )
+                                        },
+                                        keyboardType = KeyboardType.Number,
                                         modifier = Modifier.weight(1f)
                                     )
                                 }
