@@ -22,14 +22,17 @@ import com.example.stadmin.translation.domain.usecase.EditTranslationUseCase
 import com.example.stadmin.translation.domain.usecase.GetTranslationsUseCase
 import com.example.stadmin.translation.presentation.TranslationLanguage
 import com.example.stadmin.util.Constants
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TraceViewModel(
+@HiltViewModel
+class TraceViewModel @Inject constructor(
     private val getTracesUseCase: GetTracesUseCase,
     private val createTraceUseCase: CreateTraceUseCase,
     private val editTraceUseCase: EditTraceUseCase,

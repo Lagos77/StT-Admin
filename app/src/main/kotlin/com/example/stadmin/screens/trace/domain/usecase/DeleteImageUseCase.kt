@@ -2,8 +2,9 @@ package com.example.stadmin.screens.trace.domain.usecase
 
 import com.example.stadmin.screens.trace.data.ImageRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class DeleteImageUseCase(private val repository: ImageRepository) {
+class DeleteImageUseCase @Inject constructor(private val repository: ImageRepository) {
     operator fun invoke(imageUrl: String): Flow<Result<Boolean>> {
         return repository.deleteImage(imageUrl)
     }

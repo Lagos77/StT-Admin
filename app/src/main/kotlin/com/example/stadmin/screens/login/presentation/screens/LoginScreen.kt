@@ -1,5 +1,7 @@
 package com.example.stadmin.screens.login.presentation.screens
 
+import android.annotation.SuppressLint
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,23 +37,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.stadmin.R
 import com.example.stadmin.screens.login.presentation.LoginViewModel
-import com.example.stadmin.screens.login.presentation.LoginViewModelFactory
 import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.theme.STAdminTheme
 
+@SuppressLint("HardwareIds")
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
 ) {
-    val viewModel: LoginViewModel =
-        viewModel(factory = LoginViewModelFactory(context = LocalContext.current))
+    val viewModel: LoginViewModel = hiltViewModel()
     val viewState by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val deviceId = remember {
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.onClear()
@@ -130,7 +135,9 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(Spacing.extraLarge))
 
-            LoginButton(isLoading = viewState.isLoading, onClick = viewModel::onLoginClick)
+            LoginButton(
+                isLoading = viewState.isLoading,
+                onClick = { viewModel.onLoginClick(deviceId) })
 
             Spacer(modifier = Modifier.height(Spacing.large))
             Text(

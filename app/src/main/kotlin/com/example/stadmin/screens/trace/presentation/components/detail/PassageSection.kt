@@ -102,7 +102,7 @@ fun PassagesSection(
                                     })
                             },
                             keyboardType = KeyboardType.Number,
-                            maxLength = 3,
+                            maxLength = 4,
                             modifier = Modifier.weight(1f)
                         )
                         CustomTextField(
@@ -115,7 +115,7 @@ fun PassagesSection(
                                     })
                             },
                             keyboardType = KeyboardType.Number,
-                            maxLength = 3,
+                            maxLength = 4,
                             modifier = Modifier.weight(1f)
                         )
                     }

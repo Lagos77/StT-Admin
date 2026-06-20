@@ -25,10 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.stadmin.R
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
-import com.example.stadmin.screens.trace.presentation.TraceViewModelFactory
 import com.example.stadmin.screens.trace.presentation.components.detail.BasicInfoSection
 import com.example.stadmin.screens.trace.presentation.components.detail.ContentSection
 import com.example.stadmin.screens.trace.presentation.components.detail.DescriptionSection
@@ -49,7 +48,7 @@ fun TraceDetailScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val viewModel: TraceViewModel = viewModel(factory = TraceViewModelFactory(context))
+    val viewModel: TraceViewModel = hiltViewModel()
     val viewState by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val isEditMode = viewState.selectedTrace != null

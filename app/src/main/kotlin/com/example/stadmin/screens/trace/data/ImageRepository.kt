@@ -4,20 +4,22 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
-import com.example.stadmin.core.supabase.SupabaseClient
 import com.example.stadmin.screens.trace.domain.ImageInterface
 import com.example.stadmin.screens.trace.presentation.ImageType
 import com.example.stadmin.util.Constants
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 private const val IMAGE_CARD = "image-card"
 private const val IMAGES = "images"
 
-class ImageRepository : ImageInterface {
+class ImageRepository @Inject constructor(private val supabaseClient: SupabaseClient) :
+    ImageInterface {
 
-    private val storage = SupabaseClient.client.storage
+    private val storage = supabaseClient.storage
 
     override fun uploadImage(
         context: Context,

@@ -2,7 +2,6 @@ package com.example.stadmin.screens.trace.data
 
 import android.util.Log
 import com.example.stadmin.core.crypto.KeyManager
-import com.example.stadmin.core.supabase.SupabaseClient
 import com.example.stadmin.core.supabase.SupabaseTable
 import com.example.stadmin.screens.trace.data.model.TraceDto
 import com.example.stadmin.screens.trace.data.model.toDomain
@@ -10,18 +9,22 @@ import com.example.stadmin.screens.trace.domain.TraceInterface
 import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.domain.model.toDto
 import com.example.stadmin.util.Constants
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
+import javax.inject.Inject
 
 private const val FILTER_KEY = "slug"
 
-class TraceRepository(
+class TraceRepository @Inject constructor(
+    private val supabaseClient: SupabaseClient,
     private val keyManager: KeyManager,
 ) : TraceInterface {
-    private val table = SupabaseClient.from(SupabaseTable.TRACES)
+    private val table get() = supabaseClient.from(SupabaseTable.TRACES.value)
 
     override fun getTraces(): Flow<Result<List<Trace>>> {
         return flow {
@@ -88,7 +91,7 @@ class TraceRepository(
         val accessKey = keyManager.getAccessKey()
             ?: throw Exception("Not authorized")
 
-        SupabaseClient.client.postgrest.rpc(
+        supabaseClient.postgrest.rpc(
             function = "set_app_access_key",
             parameters = SetAccessKeyParams(key = accessKey)
         )

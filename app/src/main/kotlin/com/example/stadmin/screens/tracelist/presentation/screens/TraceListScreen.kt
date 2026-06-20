@@ -20,13 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.stadmin.R
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
-import com.example.stadmin.screens.trace.presentation.TraceViewModelFactory
 import com.example.stadmin.screens.trace.presentation.components.list.TraceCard
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.TopBar
@@ -38,7 +36,7 @@ fun TraceListScreen(
     onBack: () -> Unit,
     onNavigateToDetail: () -> Unit,
 ) {
-    val viewModel: TraceViewModel = viewModel(factory = TraceViewModelFactory(LocalContext.current))
+    val viewModel: TraceViewModel = hiltViewModel()
     val state by viewModel.viewState.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 

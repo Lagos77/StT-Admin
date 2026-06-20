@@ -1,21 +1,25 @@
 package com.example.stadmin.screens.login.data
 
 import android.util.Log
-import com.example.stadmin.core.supabase.SupabaseClient
 import com.example.stadmin.core.supabase.SupabaseTable
 import com.example.stadmin.screens.login.data.model.DeviceDto
 import com.example.stadmin.screens.login.domain.AuthInterface
 import com.example.stadmin.screens.login.domain.model.Device
 import com.example.stadmin.util.Constants
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class AuthRepository : AuthInterface {
+class AuthRepository @Inject constructor(
+    private val supabaseClient: SupabaseClient
+) : AuthInterface {
     override fun validateDevice(deviceId: String): Flow<Result<Device>> {
         return flow {
             if (deviceId.isBlank()) emit(Result.failure(Exception("Device ID is blank")))
             try {
-                val result = SupabaseClient.from(SupabaseTable.DEVICES)
+                val result = supabaseClient.from(SupabaseTable.DEVICES.value)
                     .select {
                         filter {
                             eq("device_id", deviceId)

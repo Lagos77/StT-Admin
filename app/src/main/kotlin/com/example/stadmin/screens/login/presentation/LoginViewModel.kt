@@ -4,20 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stadmin.core.crypto.KeyManager
 import com.example.stadmin.screens.login.domain.GetAccessKeyUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor (
     private val getAccessKeyUseCase: GetAccessKeyUseCase,
     private val keyManager: KeyManager,
-    private val deviceId: String,
 ) : ViewModel() {
-
-    //TODO Move it to strings
     private val keyClearedMessage = "Key cleared"
     private val _viewState = MutableStateFlow(LoginViewState())
     val viewState: StateFlow<LoginViewState> = _viewState.asStateFlow()
@@ -34,7 +34,7 @@ class LoginViewModel(
         _viewState.update { it.copy(isAuthenticated = false) }
     }
 
-    fun onLoginClick() {
+    fun onLoginClick(deviceId: String) {
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true, error = null) }
             if (keyManager.hasAccessKey()) {

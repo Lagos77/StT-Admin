@@ -2,7 +2,6 @@ package com.example.stadmin.translation.data
 
 import android.util.Log
 import com.example.stadmin.core.crypto.KeyManager
-import com.example.stadmin.core.supabase.SupabaseClient
 import com.example.stadmin.core.supabase.SupabaseTable
 import com.example.stadmin.translation.data.model.TraceTranslationDto
 import com.example.stadmin.translation.data.model.toDto
@@ -10,16 +9,20 @@ import com.example.stadmin.translation.domain.TraceTranslationInterface
 import com.example.stadmin.translation.domain.model.TraceTranslation
 import com.example.stadmin.translation.domain.model.toDomain
 import com.example.stadmin.util.Constants
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.rpc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
+import javax.inject.Inject
 
-class TraceTranslationRepository(
+class TraceTranslationRepository @Inject constructor(
+    private val supabaseClient: SupabaseClient,
     private val keyManager: KeyManager,
 ) : TraceTranslationInterface {
-    private val table = SupabaseClient.from(SupabaseTable.TRACE_TRANSLATIONS)
+    private val table = supabaseClient.from(SupabaseTable.TRACE_TRANSLATIONS.value)
 
     override fun getTranslations(traceSlug: String): Flow<Result<List<TraceTranslation>>> {
         return flow {
@@ -95,7 +98,7 @@ class TraceTranslationRepository(
     private suspend fun setAccessKey() {
         val accessKey = keyManager.getAccessKey()
             ?: throw Exception("Not authorized")
-        SupabaseClient.client.postgrest.rpc(
+        supabaseClient.postgrest.rpc(
             function = "set_app_access_key",
             parameters = SetAccessKeyParams(key = accessKey)
         )

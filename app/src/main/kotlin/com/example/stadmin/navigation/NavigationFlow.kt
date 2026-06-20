@@ -3,8 +3,7 @@ package com.example.stadmin.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.stadmin.screens.dashboard.presentation.DashboardScreen
 import com.example.stadmin.screens.login.presentation.screens.LoginScreen
 import com.example.stadmin.screens.trace.presentation.screens.TraceDetailScreen
@@ -12,7 +11,7 @@ import com.example.stadmin.screens.tracelist.presentation.screens.TraceListScree
 
 @Composable
 fun NavigationFlow() {
-    val viewModel: AppViewModel = viewModel(factory = AppViewModelFactory(LocalContext.current))
+    val viewModel: AppViewModel = hiltViewModel()
     val currentScreen by viewModel.currentScreen.collectAsState()
 
     when (currentScreen) {

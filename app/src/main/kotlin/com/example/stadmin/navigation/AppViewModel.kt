@@ -3,12 +3,15 @@ package com.example.stadmin.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stadmin.core.crypto.KeyManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AppViewModel(
+@HiltViewModel
+class AppViewModel @Inject constructor(
     private val keyManager: KeyManager
 ) : ViewModel() {
     private val _currentScreen = MutableStateFlow(NavigationScreen.LOGIN)
