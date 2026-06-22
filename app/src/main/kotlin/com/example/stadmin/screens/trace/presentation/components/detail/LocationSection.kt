@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.buttons.PasteButton
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 import java.util.Locale
 
@@ -46,14 +46,14 @@ fun LocationSection(
             )
         }) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            CustomTextField(
+            OutlinedCustomTextField(
                 label = "Latitude",
                 value = latitude,
                 onValueChange = onLatitudeChanged,
                 keyboardType = KeyboardType.Decimal,
                 modifier = Modifier.weight(1f)
             )
-            CustomTextField(
+            OutlinedCustomTextField(
                 label = "Longitude",
                 value = longitude,
                 onValueChange = onLongitudeChanged,

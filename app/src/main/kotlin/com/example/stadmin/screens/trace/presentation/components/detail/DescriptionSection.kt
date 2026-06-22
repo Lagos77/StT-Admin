@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -13,7 +13,7 @@ fun DescriptionSection(
     onDescriptionChanged: (String) -> Unit
 ) {
     SectionCard(title = "Description") {
-        CustomTextField(
+        OutlinedCustomTextField(
             label = "Year",
             value = description,
             onValueChange = onDescriptionChanged,

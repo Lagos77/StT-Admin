@@ -22,7 +22,7 @@ import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
 import com.example.stadmin.ui.buttons.RemoveButton
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 import com.example.stadmin.ui.common.SelectionBottomSheet
 import com.example.stadmin.ui.common.SelectorField
 import com.example.stadmin.ui.theme.STAdminTheme
@@ -63,7 +63,7 @@ fun PassagesSection(
                     verticalArrangement = Arrangement.spacedBy(Spacing.small)
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-                        BibleBookSelector(
+                        DeprecatedBibleBookSelector(
                             selectedBook = passage.book,
                             language = null,
                             onBookSelected = {
@@ -75,7 +75,7 @@ fun PassagesSection(
                             },
                             modifier = Modifier.weight(2f)
                         )
-                        CustomTextField(
+                        OutlinedCustomTextField(
                             label = "Chapter",
                             value = passage.chapter?.toString() ?: "",
                             onValueChange = {
@@ -91,7 +91,7 @@ fun PassagesSection(
                         )
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-                        CustomTextField(
+                        OutlinedCustomTextField(
                             label = "Verse Start",
                             value = passage.verseStart?.toString() ?: "",
                             onValueChange = {
@@ -105,7 +105,7 @@ fun PassagesSection(
                             maxLength = 4,
                             modifier = Modifier.weight(1f)
                         )
-                        CustomTextField(
+                        OutlinedCustomTextField(
                             label = "Verse End",
                             value = passage.verseEnd?.toString() ?: "",
                             onValueChange = {
@@ -119,7 +119,7 @@ fun PassagesSection(
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    CustomTextField(
+                    OutlinedCustomTextField(
                         label = "Text",
                         value = passage.text,
                         onValueChange = {
@@ -157,7 +157,7 @@ fun PassagesSection(
 }
 
 @Composable
-fun BibleBookSelector(
+fun DeprecatedBibleBookSelector(
     selectedBook: String,
     onBookSelected: (String) -> Unit,
     language: TranslationLanguage?,

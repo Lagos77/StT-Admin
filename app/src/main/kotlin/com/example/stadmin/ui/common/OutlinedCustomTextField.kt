@@ -19,13 +19,14 @@ import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
 
 @Composable
-fun CustomTextField(
+fun OutlinedCustomTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     minLines: Int = 1,
+    singleLine: Boolean = false,
     enabled: Boolean = true,
     maxLength: Int = Int.MAX_VALUE,
     isWarning: Boolean = false,
@@ -53,6 +54,7 @@ fun CustomTextField(
             textStyle = MaterialTheme.typography.bodyMedium,
             shape = Shapes.small,
             minLines = minLines,
+            singleLine = singleLine,
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = if (isWarning) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,

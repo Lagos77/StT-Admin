@@ -14,7 +14,7 @@ import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.buttons.PasteButton
 import com.example.stadmin.ui.buttons.RemoveButton
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 
 @Composable
 fun SourcesSection(
@@ -39,7 +39,7 @@ fun SourcesSection(
                         .padding(Spacing.small),
                     verticalArrangement = Arrangement.spacedBy(Spacing.small)
                 ) {
-                    CustomTextField(
+                    OutlinedCustomTextField(
                         label = "Label",
                         value = source.label,
                         onValueChange = {
@@ -48,7 +48,7 @@ fun SourcesSection(
                                     .also { list -> list[index] = source.copy(label = it) })
                         }
                     )
-                    CustomTextField(
+                    OutlinedCustomTextField(
                         label = "URL",
                         labelTrailingContent = {
                             PasteButton(

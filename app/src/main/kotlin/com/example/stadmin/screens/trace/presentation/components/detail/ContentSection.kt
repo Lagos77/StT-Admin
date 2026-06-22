@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stadmin.ui.buttons.PasteAndClearButtonsRow
 import com.example.stadmin.ui.buttons.RemoveButton
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -23,7 +23,7 @@ fun ContentSection(
     ) {
         content.forEachIndexed { index, paragraph ->
             Column(modifier = Modifier) {
-                CustomTextField(
+                OutlinedCustomTextField(
                     label = "Text",
                     value = paragraph,
                     onValueChange = { newValue ->

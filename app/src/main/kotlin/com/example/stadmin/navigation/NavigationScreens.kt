@@ -5,6 +5,7 @@ enum class NavigationScreen {
     DASHBOARD,
     TRACE_LIST,
     TRACE_DETAIL,
+    TRANSLATION,
     HOME_DETAIL,
     ABOUT_DETAIL,
 }

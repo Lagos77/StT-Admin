@@ -14,10 +14,11 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 private const val BASE_URL = "https://api-free.deepl.com/v2/translate"
 
-class DeepDataSource(private val apiKey: String) {
+class DeepDataSource @Inject constructor(private val apiKey: String) {
 
     private val client = HttpClient(Android) {
         install(ContentNegotiation) {

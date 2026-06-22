@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.stadmin.R
+import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
 import com.example.stadmin.screens.trace.presentation.components.detail.BasicInfoSection
 import com.example.stadmin.screens.trace.presentation.components.detail.ContentSection
@@ -37,7 +38,6 @@ import com.example.stadmin.screens.trace.presentation.components.detail.Publishe
 import com.example.stadmin.screens.trace.presentation.components.detail.SourcesSection
 import com.example.stadmin.screens.trace.presentation.components.detail.video.VideosSection
 import com.example.stadmin.screens.trace.presentation.toTrace
-import com.example.stadmin.translation.presentation.screens.TranslationBottomSheet
 import com.example.stadmin.ui.Spacing
 import com.example.stadmin.ui.common.TopBar
 import com.example.stadmin.ui.common.TopBarType
@@ -46,6 +46,7 @@ import com.example.stadmin.ui.theme.STAdminTheme
 @Composable
 fun TraceDetailScreen(
     onBack: () -> Unit,
+    onNavigateToTranslation: (Trace) -> Unit,
 ) {
     val context = LocalContext.current
     val viewModel: TraceViewModel = hiltViewModel()
@@ -79,7 +80,6 @@ fun TraceDetailScreen(
                 isLoadingTranslation = !viewState.isLoadingTranslations,
                 onBack = { viewModel.onDiscardChanges(onBack) },
                 onAdd = { viewModel.saveTrace(trace = viewState.toTrace()) },
-                onRefresh = { viewModel.getTranslation(viewState.selectedTrace?.slug ?: "") }
             )
         }
     ) { paddingValues ->
@@ -168,7 +168,9 @@ fun TraceDetailScreen(
             if (isEditMode) {
                 item {
                     OutlinedButton(
-                        onClick = viewModel::onShowTranslationSheet,
+                        onClick = {
+                            viewState.selectedTrace?.let { onNavigateToTranslation(it) }
+                        },
                         enabled = !viewState.isLoadingTranslations,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -180,29 +182,6 @@ fun TraceDetailScreen(
             }
         }
     }
-    if (viewState.showTranslationSheet) {
-        viewState.selectedTrace?.let { trace ->
-            TranslationBottomSheet(
-                baseTrace = trace,
-                viewState = viewState,
-                onLanguageChanged = viewModel::onLanguageChanged,
-                onTitleChanged = viewModel::onTitleTranslatedChanged,
-                onDescriptionChanged = viewModel::onDescriptionTranslatedChanged,
-                onContentChanged = viewModel::onContentTranslatedChanged,
-                onPassagesChanged = viewModel::onPassagesTranslatedChanged,
-                onVideosChanged = viewModel::onVideosTranslatedChanged,
-                onSaveSuccessConsumed = viewModel::onTranslationSaveSuccessConsumed,
-                onNewTranslation = viewModel::onNewTranslation,
-                onTranslationSelected = viewModel::onTranslationSelected,
-                onSave = { viewModel.saveTranslation(it) },
-                onDelete = { viewModel.deleteTranslation(it, trace.slug) },
-                onDismiss = {
-                    viewModel.onHideTranslationSheet()
-                    viewModel.onNewTranslation()
-                }
-            )
-        }
-    }
 }
 
 @Preview
@@ -211,6 +190,7 @@ private fun Example() {
     STAdminTheme {
         TraceDetailScreen(
             onBack = {},
+            onNavigateToTranslation = {},
         )
     }
 }

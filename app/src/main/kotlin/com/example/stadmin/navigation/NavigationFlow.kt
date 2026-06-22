@@ -8,13 +8,14 @@ import com.example.stadmin.screens.dashboard.presentation.DashboardScreen
 import com.example.stadmin.screens.login.presentation.screens.LoginScreen
 import com.example.stadmin.screens.trace.presentation.screens.TraceDetailScreen
 import com.example.stadmin.screens.tracelist.presentation.screens.TraceListScreen
+import com.example.stadmin.translation.presentation.screens.TranslationScreen
 
 @Composable
 fun NavigationFlow() {
     val viewModel: AppViewModel = hiltViewModel()
-    val currentScreen by viewModel.currentScreen.collectAsState()
+    val viewState by viewModel.state.collectAsState()
 
-    when (currentScreen) {
+    when (viewState.currentScreen) {
         NavigationScreen.LOGIN -> LoginScreen(onLoginSuccess = {
             viewModel.navigateTo(
                 NavigationScreen.DASHBOARD
@@ -39,7 +40,17 @@ fun NavigationFlow() {
                     NavigationScreen.TRACE_LIST
                 )
             },
+            onNavigateToTranslation = { viewModel.onNavigateToTranslation(it) },
         )
+
+        NavigationScreen.TRANSLATION -> {
+            viewState.selectedTrace?.let {
+                TranslationScreen(
+                    trace = it,
+                    onBack = { viewModel.navigateTo(NavigationScreen.TRACE_DETAIL) })
+            }
+        }
+
         NavigationScreen.HOME_DETAIL -> {}
         NavigationScreen.ABOUT_DETAIL -> {}
     }

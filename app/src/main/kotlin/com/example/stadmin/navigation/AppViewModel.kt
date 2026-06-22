@@ -3,10 +3,11 @@ package com.example.stadmin.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stadmin.core.crypto.KeyManager
+import com.example.stadmin.screens.trace.domain.model.Trace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,17 +15,36 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val keyManager: KeyManager
 ) : ViewModel() {
-    private val _currentScreen = MutableStateFlow(NavigationScreen.LOGIN)
-    val currentScreen: StateFlow<NavigationScreen> = _currentScreen.asStateFlow()
+
+    private val _state = MutableStateFlow(AppState())
+    val state: StateFlow<AppState> = _state
 
     fun navigateTo(screen: NavigationScreen) {
-        _currentScreen.value = screen
+        _state.update { it.copy(currentScreen = screen, selectedTrace = null) }
+    }
+
+    fun onTraceSelected(trace: Trace) {
+        _state.update { it.copy(selectedTrace = trace) }
+    }
+
+    fun onNavigateToTranslation(trace: Trace) {
+        _state.update {
+            it.copy(
+                selectedTrace = trace,
+                currentScreen = NavigationScreen.TRANSLATION
+            )
+        }
     }
 
     fun onSignOut() {
         viewModelScope.launch {
             keyManager.clear()
-            _currentScreen.value = NavigationScreen.LOGIN
+            _state.update { it.copy(currentScreen = NavigationScreen.LOGIN, selectedTrace = null) }
         }
     }
+
+    data class AppState(
+        val currentScreen: NavigationScreen = NavigationScreen.LOGIN,
+        val selectedTrace: Trace? = null,
+    )
 }

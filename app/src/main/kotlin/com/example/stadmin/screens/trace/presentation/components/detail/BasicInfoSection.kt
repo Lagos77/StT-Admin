@@ -36,7 +36,7 @@ import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.CustomTextField
+import com.example.stadmin.ui.common.OutlinedCustomTextField
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -56,15 +56,15 @@ fun BasicInfoSection(
     onImageDeleted: (ImageType) -> Unit,
 ) {
     SectionCard(title = "Basic Info") {
-        CustomTextField(label = "Title", value = title, onValueChange = onTitleChanged)
-        CustomTextField(
+        OutlinedCustomTextField(label = "Title", value = title, onValueChange = onTitleChanged)
+        OutlinedCustomTextField(
             label = "URL Path",
             value = slug,
             onValueChange = onSlugChanged,
             enabled = false
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            CustomTextField(
+            OutlinedCustomTextField(
                 label = "Year",
                 value = year,
                 onValueChange = onYearChanged,

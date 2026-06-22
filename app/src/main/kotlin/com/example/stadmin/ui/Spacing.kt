@@ -4,8 +4,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
 object Spacing {
+    val start = 1.dp
+    val verySmall = 2.dp
     val extraSmall = 4.dp
     val small = 8.dp
+    val smallMedium = 12.dp
     val medium = 16.dp
     val large = 24.dp
     val extraLarge = 32.dp
@@ -14,7 +17,10 @@ object Spacing {
 }
 
 object Sizing {
+    val buttonRadius = 8.dp
     val cardRadius = 12.dp
+    val iconExtraSmall = 8.dp
+    val iconVerySmall = 12.dp
     val iconSmall = 16.dp
     val iconMedium = 24.dp
     val iconLarge = 32.dp
