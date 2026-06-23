@@ -49,7 +49,6 @@ class TranslationViewModel @Inject constructor(
 
     private fun getTranslation(traceSlug: String) {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
             getTranslationsUseCase(traceSlug).collectLatest { result ->
                 result.fold(
                     onSuccess = { translations ->
@@ -204,9 +203,6 @@ class TranslationViewModel @Inject constructor(
         }
         _viewState.update { it.copy(passagesDraft = updated) }
     }
-
-    fun onSaveSuccessConsumed() = _viewState.update { it.copy(saveSuccess = false) }
-    fun onDeleteSuccessConsumed() = _viewState.update { it.copy(deleteSuccess = false) }
     fun onSnackBarMessageConsumed() = _viewState.update { it.copy(snackBarMessage = null) }
 
     fun translate(
@@ -224,7 +220,7 @@ class TranslationViewModel @Inject constructor(
     }
 
     data class TranslationViewState(
-        val isLoading: Boolean = false,
+        val isLoading: Boolean = true,
         val isSaving: Boolean = false,
         val isTranslating: Boolean = false,
         val saveSuccess: Boolean = false,

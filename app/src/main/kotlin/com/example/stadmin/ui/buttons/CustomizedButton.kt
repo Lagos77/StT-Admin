@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,8 +31,10 @@ fun CustomizedButton(
     modifier: Modifier = Modifier,
     label: String?,
     isEnabled: Boolean = true,
+    isLoading: Boolean = false,
     icon: ImageVector?,
-    color: ButtonColor,
+    containerColor: ContainerColor,
+    iconColorType: IconType = IconType.DEFAULT,
     onClick: () -> Unit,
 ) {
     Button(
@@ -40,9 +43,9 @@ fun CustomizedButton(
         enabled = isEnabled,
         contentPadding = PaddingValues(horizontal = Spacing.medium),
         colors = ButtonDefaults.buttonColors(
-            containerColor = setContainerColor(color),
+            containerColor = setContainerColor(containerColor),
             contentColor = MaterialTheme.colorScheme.onBackground,
-            disabledContainerColor = setContainerColor(color),
+            disabledContainerColor = setContainerColor(containerColor),
             disabledContentColor = MaterialTheme.colorScheme.outline
 
         ),
@@ -56,34 +59,54 @@ fun CustomizedButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.small)
         ) {
-            if (icon != null) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(Sizing.iconVerySmall),
-                    tint = MaterialTheme.colorScheme.onBackground
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(Spacing.extraLarge),
+                    color = MaterialTheme.colorScheme.onBackground,
                 )
-            }
-            if (label != null) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                )
+            } else {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(Sizing.iconVerySmall),
+                        tint = if (!isEnabled) MaterialTheme.colorScheme.outline else setIconColor(iconColorType),
+                    )
+                }
+                if (label != null) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun setContainerColor(color: ButtonColor): Color {
+private fun setContainerColor(color: ContainerColor): Color {
     return when (color) {
-        ButtonColor.LIGHT_BROWN -> MaterialTheme.colorScheme.background
-        ButtonColor.WHITE -> MaterialTheme.colorScheme.onPrimary
+        ContainerColor.LIGHT_BROWN -> MaterialTheme.colorScheme.background
+        ContainerColor.WHITE -> MaterialTheme.colorScheme.onPrimary
     }
 }
 
-enum class ButtonColor {
+@Composable
+private fun setIconColor(color: IconType): Color {
+    return when (color) {
+        IconType.DEFAULT ->    MaterialTheme.colorScheme.onBackground
+        IconType.ERROR ->    MaterialTheme.colorScheme.error
+    }
+}
+
+enum class IconType {
+    DEFAULT,
+    ERROR,
+}
+
+enum class ContainerColor {
     LIGHT_BROWN,
     WHITE,
 }
@@ -95,7 +118,7 @@ private fun CustomizedButtonPreview() {
         CustomizedButton(
             label = "Translate",
             icon = Icons.Filled.Translate,
-            color = ButtonColor.LIGHT_BROWN,
+            containerColor = ContainerColor.LIGHT_BROWN,
             onClick = {}
         )
     }

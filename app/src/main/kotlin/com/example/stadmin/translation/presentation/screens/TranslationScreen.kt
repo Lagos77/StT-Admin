@@ -27,8 +27,6 @@ import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Translate
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,9 +36,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -68,8 +67,9 @@ import com.example.stadmin.ui.Border
 import com.example.stadmin.ui.Shapes
 import com.example.stadmin.ui.Sizing
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.buttons.ButtonColor
+import com.example.stadmin.ui.buttons.ContainerColor
 import com.example.stadmin.ui.buttons.CustomizedButton
+import com.example.stadmin.ui.buttons.IconType
 import com.example.stadmin.ui.common.BasicCustomTextField
 import com.example.stadmin.ui.common.BibleBookSelector
 import com.example.stadmin.ui.theme.STAdminTheme
@@ -122,101 +122,8 @@ fun TranslationScreen(
                         )
                     }
                 },
+                onSnackBarMessageConsumed = viewModel::onSnackBarMessageConsumed
             )
-        }
-    }
-}
-
-@Composable
-private fun StackedField(
-    label: String,
-    placeHolder: String,
-    currentLanguage: TranslationLanguage,
-    sourceText: String,
-    targetValue: String,
-    onTargetChange: (String) -> Unit,
-    onTranslate: () -> Unit,
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        shape = Shapes.small,
-        border = BorderStroke(Border.small, MaterialTheme.colorScheme.outline),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(Spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = label.uppercase(),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.Bold,
-                )
-
-                StatusIndicator(isEdited = targetValue.isNotBlank())
-            }
-            HorizontalDivider(modifier = Modifier.background(color = MaterialTheme.colorScheme.outline))
-
-            Column(
-                modifier = Modifier.padding(
-                    vertical = Spacing.verySmall,
-                    horizontal = Spacing.small
-                )
-            ) {
-                Text(
-                    text = "English",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-                Text(
-                    text = sourceText,
-                    modifier = Modifier.padding(vertical = Spacing.verySmall),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            HorizontalDivider(modifier = Modifier.background(color = MaterialTheme.colorScheme.outline))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        vertical = Spacing.small,
-                        horizontal = Spacing.small
-                    ),
-            ) {
-                BasicCustomTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    label = languageName(language = currentLanguage),
-                    placeHolder = placeHolder,
-                    value = targetValue,
-                    onValueChange = onTargetChange,
-                    minLines = 1,
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    CustomizedButton(
-                        label = if (targetValue.isBlank()) "Translate" else "Re-translate",
-                        icon = Icons.Filled.Translate,
-                        color = ButtonColor.LIGHT_BROWN,
-                        onClick = onTranslate
-                    )
-                }
-            }
-
         }
     }
 }
@@ -235,15 +142,25 @@ private fun TranslationScreenContent(
     onTranslate: (String, String, (String) -> Unit) -> Unit,
     onTranslateRemainingContent: (Int, String, List<String>) -> Unit,
     onSave: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onSnackBarMessageConsumed: () -> Unit,
 ) {
 
+    val snackBarHostState = remember { SnackbarHostState() }
     var showFullContentText by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var contentStep by remember { mutableIntStateOf(0) }
     var passageStep by remember { mutableIntStateOf(0) }
 
+    LaunchedEffect(viewState.snackBarMessage) {
+        viewState.snackBarMessage?.let {
+            snackBarHostState.showSnackbar(it)
+            onSnackBarMessageConsumed()
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         containerColor = MaterialTheme.colorScheme.surface,
         topBar = {
             Row(
@@ -255,7 +172,7 @@ private fun TranslationScreenContent(
                 CustomizedButton(
                     label = trace.title,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    color = ButtonColor.WHITE,
+                    containerColor = ContainerColor.WHITE,
                     onClick = onBack
                 )
             }
@@ -382,7 +299,7 @@ private fun TranslationScreenContent(
                                                 .padding(bottom = Spacing.small),
                                             label = "Close",
                                             icon = null,
-                                            color = ButtonColor.WHITE,
+                                            containerColor = ContainerColor.WHITE,
                                             onClick = { showFullContentText = false }
                                         )
                                     }
@@ -408,7 +325,7 @@ private fun TranslationScreenContent(
                             CustomizedButton(
                                 label = "Translate this",
                                 icon = Icons.Filled.Translate,
-                                color = ButtonColor.LIGHT_BROWN,
+                                containerColor = ContainerColor.LIGHT_BROWN,
                                 onClick = {
                                     onTranslate(
                                         currentSource,
@@ -421,7 +338,7 @@ private fun TranslationScreenContent(
                             CustomizedButton(
                                 label = "Translate rest",
                                 icon = Icons.Filled.Translate,
-                                color = ButtonColor.LIGHT_BROWN,
+                                containerColor = ContainerColor.LIGHT_BROWN,
                                 onClick = {
                                     onTranslateRemainingContent(
                                         contentStep,
@@ -556,13 +473,13 @@ private fun TranslationScreenContent(
                                 CustomizedButton(
                                     label = "Paste",
                                     icon = Icons.Default.ContentPaste,
-                                    color = ButtonColor.LIGHT_BROWN,
+                                    containerColor = ContainerColor.LIGHT_BROWN,
                                     onClick = {},
                                 )
                                 CustomizedButton(
                                     label = "Clear",
                                     icon = Icons.Default.ClearAll,
-                                    color = ButtonColor.LIGHT_BROWN,
+                                    containerColor = ContainerColor.LIGHT_BROWN,
                                     onClick = {},
                                 )
                             }
@@ -577,33 +494,114 @@ private fun TranslationScreenContent(
                     .padding(Spacing.small),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.small)
             ) {
-                Button(
-                    onClick = onSave,
+                CustomizedButton(
                     modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Language,
-                        contentDescription = null,
-                        modifier = Modifier.size(Sizing.iconSmall),
-                    )
-                    Text(
-                        text = "Save ${languageName(viewState.language)}",
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-                OutlinedButton(
-                    onClick = onDelete,
-                    enabled = viewState.isSaving,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
+                    label = "Save ${languageName(viewState.language)}",
+                    icon = Icons.Default.Language,
+                    isLoading = viewState.isSaving,
+                    containerColor = ContainerColor.WHITE,
+                    onClick = onSave
+                )
+                CustomizedButton(
+                    label = null,
+                    icon = Icons.Default.Delete,
+                    isEnabled = !viewState.isSaving,
+                    iconColorType = IconType.ERROR,
+                    containerColor = ContainerColor.WHITE,
+                    onClick = onDelete
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun StackedField(
+    label: String,
+    placeHolder: String,
+    currentLanguage: TranslationLanguage,
+    sourceText: String,
+    targetValue: String,
+    onTargetChange: (String) -> Unit,
+    onTranslate: () -> Unit,
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        shape = Shapes.small,
+        border = BorderStroke(Border.small, MaterialTheme.colorScheme.outline),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Spacing.small),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = label.uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                )
+
+                StatusIndicator(isEdited = targetValue.isNotBlank())
+            }
+            HorizontalDivider(modifier = Modifier.background(color = MaterialTheme.colorScheme.outline))
+
+            Column(
+                modifier = Modifier.padding(
+                    vertical = Spacing.verySmall,
+                    horizontal = Spacing.small
+                )
+            ) {
+                Text(
+                    text = "English",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    text = sourceText,
+                    modifier = Modifier.padding(vertical = Spacing.verySmall),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            HorizontalDivider(modifier = Modifier.background(color = MaterialTheme.colorScheme.outline))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        vertical = Spacing.small,
+                        horizontal = Spacing.small
                     ),
-                    border = BorderStroke(Border.small, MaterialTheme.colorScheme.error),
+            ) {
+                BasicCustomTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = languageName(language = currentLanguage),
+                    placeHolder = placeHolder,
+                    value = targetValue,
+                    onValueChange = onTargetChange,
+                    minLines = 1,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete translation",
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(Sizing.iconSmall),
+                    CustomizedButton(
+                        label = if (targetValue.isBlank()) "Translate" else "Re-translate",
+                        icon = Icons.Filled.Translate,
+                        containerColor = ContainerColor.LIGHT_BROWN,
+                        onClick = onTranslate
                     )
                 }
             }
@@ -648,7 +646,7 @@ private fun StepperCard(
                     label = null,
                     isEnabled = step > 0,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    color = ButtonColor.LIGHT_BROWN,
+                    containerColor = ContainerColor.LIGHT_BROWN,
                     onClick = onPrevious,
                 )
                 Text(
@@ -660,7 +658,7 @@ private fun StepperCard(
                     label = null,
                     isEnabled = step < total - 1,
                     icon = Icons.AutoMirrored.Filled.ArrowForward,
-                    color = ButtonColor.LIGHT_BROWN,
+                    containerColor = ContainerColor.LIGHT_BROWN,
                     onClick = onNext,
                 )
             }
@@ -797,6 +795,7 @@ private fun TranslationScreenPreview() {
             onTranslateRemainingContent = { _, _, _ -> },
             onSave = {},
             onDelete = {},
+            onSnackBarMessageConsumed = {},
         )
     }
 }
