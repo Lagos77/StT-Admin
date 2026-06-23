@@ -319,15 +319,6 @@ class TraceViewModel @Inject constructor(
 
     fun onVideosChanged(videos: List<Video>) = _viewState.update { it.copy(videos = videos) }
     fun onSourcesChanged(sources: List<Source>) = _viewState.update { it.copy(sources = sources) }
-
-    fun onDeleteSuccessConsumed() {
-        _viewState.update { it.copy(deleteSuccess = false) }
-    }
-
-    fun onSaveSuccessConsumed() {
-        _viewState.update { it.copy(saveSuccess = false) }
-    }
-
     fun onFirstTimeCreatedConsumed() {
         _viewState.update { it.copy(isFirstTimeCreated = false) }
     }

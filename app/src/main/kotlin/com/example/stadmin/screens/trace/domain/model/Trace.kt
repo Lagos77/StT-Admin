@@ -26,16 +26,18 @@ data class Trace(
     val updatedAt: String?
 ) {
     val isComplete: Boolean
-        get() = !title.isNullOrBlank() &&
-                !description.isNullOrBlank() &&
-                !imageUrl.isNullOrBlank() &&
-                !heroImageUrl.isNullOrBlank() &&
-                latitude != null &&
-                longitude != null &&
-                !content.isNullOrEmpty() &&
-                !passages.isNullOrEmpty() &&
-                !videos.isNullOrEmpty() &&
-                !sources.isNullOrEmpty()
+        get() {
+            val requiresLocation = era != TraceEra.PROPHECY && era != TraceEra.UNKNOWN
+            return title.isNotBlank() &&
+                    !description.isNullOrBlank() &&
+                    !imageUrl.isNullOrBlank() &&
+                    !heroImageUrl.isNullOrBlank() &&
+                    (!requiresLocation || (latitude != null && longitude != null && year != null)) &&
+                    !content.isNullOrEmpty() &&
+                    !passages.isNullOrEmpty() &&
+                    !videos.isNullOrEmpty() &&
+                    !sources.isNullOrEmpty()
+        }
 }
 
 data class Passage(

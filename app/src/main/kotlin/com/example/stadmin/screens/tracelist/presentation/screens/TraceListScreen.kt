@@ -3,10 +3,19 @@ package com.example.stadmin.screens.tracelist.presentation.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -24,11 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.stadmin.R
+import com.example.stadmin.screens.trace.domain.model.Trace
 import com.example.stadmin.screens.trace.presentation.TraceViewModel
+import com.example.stadmin.screens.trace.presentation.TraceViewState
 import com.example.stadmin.screens.trace.presentation.components.list.TraceCard
 import com.example.stadmin.ui.Spacing
-import com.example.stadmin.ui.common.TopBar
-import com.example.stadmin.ui.common.TopBarType
+import com.example.stadmin.ui.buttons.ContainerColor
+import com.example.stadmin.ui.buttons.CustomizedButton
 import com.example.stadmin.ui.theme.STAdminTheme
 
 @Composable
@@ -38,48 +49,109 @@ fun TraceListScreen(
 ) {
     val viewModel: TraceViewModel = hiltViewModel()
     val state by viewModel.viewState.collectAsState()
+
+    TraceListContent(
+        onBack = {
+            viewModel.onSnackBarMessageConsumed()
+            onBack()
+        },
+        onAddTrace = {
+            viewModel.onCreateNewTrace()
+            onNavigateToDetail()
+        },
+        state = state,
+        onRefresh = viewModel::getTraceList,
+        onTraceSelected = {
+            viewModel.onTraceSelected(it)
+            onNavigateToDetail()
+        },
+        onDeleteTrace = { viewModel.deleteTrace(it) },
+        onSnackBarMessageConsumed = { viewModel.onSnackBarMessageConsumed() }
+    )
+}
+
+@Composable
+private fun TraceListContent(
+    state: TraceViewState,
+    onAddTrace: () -> Unit,
+    onRefresh: () -> Unit,
+    onBack: () -> Unit,
+    onTraceSelected: (Trace) -> Unit,
+    onDeleteTrace: (String) -> Unit,
+    onSnackBarMessageConsumed: () -> Unit,
+) {
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.snackBarMessage) {
         state.snackBarMessage?.let {
             snackBarHostState.showSnackbar(it)
-            viewModel.onSnackBarMessageConsumed()
+            onSnackBarMessageConsumed()
         }
     }
 
     LaunchedEffect(state.deleteSuccess) {
         if (state.deleteSuccess) {
-            //TODO avoid hardcoding
             snackBarHostState.showSnackbar("Trace deleted successfully")
-            viewModel.onDeleteSuccessConsumed()
+            onSnackBarMessageConsumed()
         }
     }
 
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
-            viewModel.onSaveSuccessConsumed()
+            onSnackBarMessageConsumed()
         }
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.surface,
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
+            Row(
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.small, vertical = Spacing.verySmall),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CustomizedButton(
+                    label = null,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    containerColor = ContainerColor.WHITE,
+                    onClick = onBack,
+                )
+                Text(
+                    text = "Total: ${state.traces.size} · Draft: ${state.traces.count { !it.isComplete }}" ,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.small)
+                ) {
+                    CustomizedButton(
+                        label = null,
+                        icon = Icons.Filled.Refresh,
+                        containerColor = ContainerColor.WHITE,
+                        onClick = onRefresh,
+                    )
+                    CustomizedButton(
+                        label = null,
+                        icon = Icons.Filled.Add,
+                        containerColor = ContainerColor.WHITE,
+                        onClick = onAddTrace,
+                    )
+                }
+            }
+            /*
             TopBar(
                 type = TopBarType.LIST,
                 title = stringResource(R.string.trace_list_title),
-                onBack = {
-                    viewModel.onSnackBarMessageConsumed()
-                    onBack()
-                },
-                onAdd = {
-                    viewModel.onCreateNewTrace()
-                    onNavigateToDetail()
-                },
-                onRefresh = {
-                    viewModel.getTraceList()
-                }
+                onBack = onBack,
+                onAdd = onAddTrace,
+                onRefresh = onRefresh,
             )
+
+             */
         }
     ) { paddingValues ->
         when {
@@ -97,17 +169,15 @@ fun TraceListScreen(
                     items(state.traces, key = { it.slug }) { trace ->
                         TraceCard(
                             trace = trace,
-                            onClick = {
-                                viewModel.onTraceSelected(trace)
-                                onNavigateToDetail()
-                            },
-                            onDelete = { viewModel.deleteTrace(trace.slug) }
+                            onClick = { onTraceSelected(trace) },
+                            onDelete = { onDeleteTrace(trace.slug) }
                         )
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -144,9 +214,14 @@ private fun EmptyScreen(paddingValues: PaddingValues) {
 @Composable
 private fun Example() {
     STAdminTheme {
-        TraceListScreen(
+        TraceListContent(
+            state = TraceViewState(),
+            onAddTrace = {},
+            onRefresh = {},
             onBack = {},
-            onNavigateToDetail = {}
+            onTraceSelected = {},
+            onDeleteTrace = {},
+            onSnackBarMessageConsumed = {}
         )
     }
 }
